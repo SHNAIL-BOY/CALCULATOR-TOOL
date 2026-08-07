@@ -5,6 +5,46 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>CALCULATOR</title>
   <style>
+    :root {
+      --bg-color: #2c384a;
+      --card-bg: rgba(255, 255, 255, 0.1);
+      --card-hover: rgba(255, 255, 255, 0.2);
+      --text-color: #ffffff;
+      --header-bg: rgba(0, 0, 0, 0.25);
+      --pill-bg: #355070;
+      --accent-color: #00ffcc;
+    }
+
+    [data-theme="neon"] {
+      --bg-color: #09090e;
+      --card-bg: rgba(255, 0, 127, 0.1);
+      --card-hover: rgba(255, 0, 127, 0.25);
+      --text-color: #00ffcc;
+      --header-bg: rgba(255, 0, 127, 0.15);
+      --pill-bg: #ff007f;
+      --accent-color: #00ffcc;
+    }
+
+    [data-theme="light"] {
+      --bg-color: #cbd5e1;
+      --card-bg: rgba(255, 255, 255, 0.6);
+      --card-hover: rgba(255, 255, 255, 0.9);
+      --text-color: #0f172a;
+      --header-bg: rgba(255, 255, 255, 0.8);
+      --pill-bg: #2563eb;
+      --accent-color: #1d4ed8;
+    }
+
+    [data-theme="midnight"] {
+      --bg-color: #0b132b;
+      --card-bg: rgba(28, 37, 65, 0.6);
+      --card-hover: rgba(58, 80, 107, 0.8);
+      --text-color: #e0e1dd;
+      --header-bg: rgba(11, 19, 43, 0.6);
+      --pill-bg: #3a506b;
+      --accent-color: #4ea8de;
+    }
+
     * {
       box-sizing: border-box;
       margin: 0;
@@ -12,18 +52,20 @@
     }
 
     body {
-      background-color: #4d4444;
+      background-color: var(--bg-color);
       font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
       display: flex;
       flex-direction: column;
       align-items: center;
       min-height: 100vh;
+      color: var(--text-color);
+      transition: background-color 0.3s ease, color 0.3s ease;
     }
 
     /* --- Top Navigation Header --- */
     header {
       width: 100%;
-      background-color: rgba(0, 0, 0, 0.25);
+      background-color: var(--header-bg);
       backdrop-filter: blur(8px);
       padding: 16px 32px;
       display: flex;
@@ -33,7 +75,7 @@
     }
 
     .logo {
-      color: #ffffff;
+      color: var(--text-color);
       font-size: 22px;
       font-weight: 800;
       text-decoration: none;
@@ -44,11 +86,12 @@
 
     nav {
       display: flex;
+      align-items: center;
       gap: 12px;
     }
 
     nav a {
-      color: #ffffff;
+      color: var(--text-color);
       text-decoration: none;
       font-weight: 600;
       font-size: 15px;
@@ -60,52 +103,65 @@
     nav a:hover {
       background-color: rgba(255, 255, 255, 0.2);
     }
-    /* ----------------------------- */
+
+    .theme-select {
+      background: rgba(0,0,0,0.3);
+      color: var(--text-color);
+      border: 1px solid var(--accent-color);
+      padding: 6px 10px;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      outline: none;
+    }
 
     .content-container {
       width: 100%;
-      max-width: 1100px;
-      padding: 40px 20px;
+      max-width: 1200px;
+      padding: 30px 20px;
     }
 
     .game-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
       gap: 16px;
       width: 100%;
     }
 
     .game-card {
-      background-color: rgba(255, 255, 255, 0.2);
-      border-radius: 16px;
-      padding: 6px;
+      background-color: var(--card-bg);
+      border-radius: 14px;
+      padding: 8px;
       text-decoration: none;
       display: flex;
       flex-direction: column;
       align-items: center;
       cursor: pointer;
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
     }
 
     .game-card:hover {
       transform: translateY(-4px);
-      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.25);
+      background-color: var(--card-hover);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
     }
 
     .game-card img {
       width: 100%;
       aspect-ratio: 1 / 1;
       object-fit: cover;
-      border-radius: 12px;
+      border-radius: 10px;
     }
 
     .game-title {
+      background-color: var(--pill-bg);
       color: #ffffff;
-      font-size: 13px;
+      font-size: 12px;
       font-weight: 700;
       text-align: center;
       margin-top: 8px;
-      margin-bottom: 4px;
+      padding: 6px 8px;
+      border-radius: 8px;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
@@ -127,8 +183,8 @@
     .modal-content {
       position: relative;
       width: 90%;
-      max-width: 900px;
-      height: 80vh;
+      max-width: 950px;
+      height: 85vh;
       background: #000;
       border-radius: 12px;
       overflow: hidden;
@@ -156,30 +212,141 @@
 
   <header>
     <a href="#" class="logo">🎮 SHNAIL-UNBLOCKED</a>
-<nav>
-  <a href="games">Games</a>
-  <a href="about">About</a>
-  <a href="index">Calculator</a>
-</nav>
+    <nav>
+      <a href="games">Games</a>
+      <a href="about">About</a>
+      <a href="index">Calculator</a>
 
+      <select id="themeSelector" class="theme-select" onchange="changeTheme(this.value)">
+        <option value="default">Dark</option>
+        <option value="neon">Neon</option>
+        <option value="light">Light</option>
+        <option value="midnight">Midnight</option>
+      </select>
+    </nav>
   </header>
 
   <div class="content-container">
     <div class="game-grid">
 
-      <div class="game-card" onclick="openGame('https://shnail-platformer.com/')">
-        <img src="https://shnail-platformer.com/favicon.png" alt="SHNAIL-PLAT">
-        <span class="game-title">SHNAIL-PLATFORMER</span>
+      <div class="game-card" onclick="openGame('https://puppetmaster.github.io')">
+        <img src="https://images.crazygames.com/puppet-master/20230206103000/puppet-master-cover" alt="Puppet Master" onerror="this.src='https://via.placeholder.com/150/1e293b/00ffcc?text=Puppet+Master'">
+        <span class="game-title">Puppet Master</span>
       </div>
-      
-      <div class="game-card" onclick="openGame('https://hextris.github.io/hextris/')">
-        <img src="https://hextris.io/images/icons/apple-touch-512.png" alt="Hextris">
-        <span class="game-title">Hextris</span>
+
+      <div class="game-card" onclick="openGame('https://blumgi-ball.github.io')">
+        <img src="https://images.crazygames.com/blumgi-ball/20220914152010/blumgi-ball-cover" alt="Blumgi Ball" onerror="this.src='https://via.placeholder.com/150/1e293b/00ffcc?text=Blumgi+Ball'">
+        <span class="game-title">Blumgi Ball</span>
       </div>
-      
-      <div class="game-card" onclick="openGame('https://daocloud.github.io/dao-2048/')">
-        <img src="https://play2048.co/favicon180.png" alt="2048">
-        <span class="game-title">2048</span>
+
+      <div class="game-card" onclick="openGame('https://blumgi-rocket.github.io')">
+        <img src="https://images.crazygames.com/blumgi-rocket/20221021113000/blumgi-rocket-cover" alt="Blumgi Rocket" onerror="this.src='https://via.placeholder.com/150/1e293b/00ffcc?text=Blumgi+Rocket'">
+        <span class="game-title">Blumgi Rocket</span>
+      </div>
+
+      <div class="game-card" onclick="openGame('https://chromedino.com')">
+        <img src="https://images.crazygames.com/dinosaur-game/20210202100000/dinosaur-game-cover" alt="Dinosaur Game" onerror="this.src='https://via.placeholder.com/150/1e293b/00ffcc?text=Dinosaur+Game'">
+        <span class="game-title">Dinosaur Game</span>
+      </div>
+
+      <div class="game-card" onclick="openGame('https://motomaniac2.github.io')">
+        <img src="https://images.crazygames.com/moto-maniac-2/20210518100000/moto-maniac-2-cover" alt="Moto Maniac 2" onerror="this.src='https://via.placeholder.com/150/1e293b/00ffcc?text=Moto+Maniac+2'">
+        <span class="game-title">Moto Maniac 2</span>
+      </div>
+
+      <div class="game-card" onclick="openGame('https://dunkbrush.github.io')">
+        <img src="https://images.crazygames.com/dunkbrush/20201015100000/dunkbrush-cover" alt="Dunkbrush" onerror="this.src='https://via.placeholder.com/150/1e293b/00ffcc?text=Dunkbrush'">
+        <span class="game-title">Dunkbrush</span>
+      </div>
+
+      <div class="game-card" onclick="openGame('https://ducklife4.github.io')">
+        <img src="https://images.crazygames.com/duck-life-4/20201015100000/duck-life-4-cover" alt="Duck Life 4" onerror="this.src='https://via.placeholder.com/150/1e293b/00ffcc?text=Duck+Life+4'">
+        <span class="game-title">Duck Life 4</span>
+      </div>
+
+      <div class="game-card" onclick="openGame('https://noobdrive.github.io')">
+        <img src="https://images.crazygames.com/noob-drive/20230110100000/noob-drive-cover" alt="Noob Drive" onerror="this.src='https://via.placeholder.com/150/1e293b/00ffcc?text=Noob+Drive'">
+        <span class="game-title">Noob Drive</span>
+      </div>
+
+      <div class="game-card" onclick="openGame('https://tubejumpers.github.io')">
+        <img src="https://images.crazygames.com/tube-jumpers/20201015100000/tube-jumpers-cover" alt="Tube Jumpers" onerror="this.src='https://via.placeholder.com/150/1e293b/00ffcc?text=Tube+Jumpers'">
+        <span class="game-title">Tube Jumpers</span>
+      </div>
+
+      <div class="game-card" onclick="openGame('https://ducklife3.github.io')">
+        <img src="https://images.crazygames.com/duck-life-3-evolution/20201015100000/duck-life-3-evolution-cover" alt="Duck Life 3 Evolution" onerror="this.src='https://via.placeholder.com/150/1e293b/00ffcc?text=Duck+Life+3'">
+        <span class="game-title">Duck Life 3 Evolution</span>
+      </div>
+
+      <div class="game-card" onclick="openGame('https://stickmanbridgecraft.github.io')">
+        <img src="https://images.crazygames.com/stickman-bridge-craft/20220505100000/stickman-bridge-craft-cover" alt="Stickman Bridge Craft" onerror="this.src='https://via.placeholder.com/150/1e293b/00ffcc?text=Stickman+Bridge'">
+        <span class="game-title">Stickman Bridge C...</span>
+      </div>
+
+      <div class="game-card" onclick="openGame('https://towerofdestiny.github.io')">
+        <img src="https://images.crazygames.com/tower-of-destiny/20201015100000/tower-of-destiny-cover" alt="Tower Of Destiny" onerror="this.src='https://via.placeholder.com/150/1e293b/00ffcc?text=Tower+Of+Destiny'">
+        <span class="game-title">Tower Of Destiny</span>
+      </div>
+
+      <div class="game-card" onclick="openGame('https://unicyclehero.github.io')">
+        <img src="https://images.crazygames.com/unicycle-hero/20220310100000/unicycle-hero-cover" alt="Unicycle Hero" onerror="this.src='https://via.placeholder.com/150/1e293b/00ffcc?text=Unicycle+Hero'">
+        <span class="game-title">Unicycle Hero</span>
+      </div>
+
+      <div class="game-card" onclick="openGame('https://shortlife.github.io')">
+        <img src="https://images.crazygames.com/short-life/20201015100000/short-life-cover" alt="Short Life" onerror="this.src='https://via.placeholder.com/150/1e293b/00ffcc?text=Short+Life'">
+        <span class="game-title">Short Life</span>
+      </div>
+
+      <div class="game-card" onclick="openGame('https://jellytruck.github.io')">
+        <img src="https://images.crazygames.com/jelly-truck/20201015100000/jelly-truck-cover" alt="Jelly Truck" onerror="this.src='https://via.placeholder.com/150/1e293b/00ffcc?text=Jelly+Truck'">
+        <span class="game-title">Jelly Truck</span>
+      </div>
+
+      <div class="game-card" onclick="openGame('https://perfectpeel.github.io')">
+        <img src="https://images.crazygames.com/perfect-peel/20210215100000/perfect-peel-cover" alt="Perfect Peel" onerror="this.src='https://via.placeholder.com/150/1e293b/00ffcc?text=Perfect+Peel'">
+        <span class="game-title">Perfect Peel</span>
+      </div>
+
+      <div class="game-card" onclick="openGame('https://arithmetica.github.io')">
+        <img src="https://images.crazygames.com/arithmetica/20210301100000/arithmetica-cover" alt="Arithmetica" onerror="this.src='https://via.placeholder.com/150/1e293b/00ffcc?text=Arithmetica'">
+        <span class="game-title">Arithmetica</span>
+      </div>
+
+      <div class="game-card" onclick="openGame('https://jollyworld.github.io')">
+        <img src="https://images.crazygames.com/jollyworld/20210601100000/jollyworld-cover" alt="Jollyworld" onerror="this.src='https://via.placeholder.com/150/1e293b/00ffcc?text=Jollyworld'">
+        <span class="game-title">Jollyworld</span>
+      </div>
+
+      <div class="game-card" onclick="openGame('https://adofai.github.io')">
+        <img src="https://images.crazygames.com/a-dance-of-fire-and-ice/20210712100000/a-dance-of-fire-and-ice-cover" alt="A Dance Of Fire And Ice" onerror="this.src='https://via.placeholder.com/150/1e293b/00ffcc?text=ADOFAI'">
+        <span class="game-title">A Dance Of Fire And...</span>
+      </div>
+
+      <div class="game-card" onclick="openGame('https://ducklife.github.io')">
+        <img src="https://images.crazygames.com/duck-life/20201015100000/duck-life-cover" alt="Duck Life" onerror="this.src='https://via.placeholder.com/150/1e293b/00ffcc?text=Duck+Life'">
+        <span class="game-title">Duck Life</span>
+      </div>
+
+      <div class="game-card" onclick="openGame('https://basketball-line.github.io')">
+        <img src="https://images.crazygames.com/basketball-line/20210801100000/basketball-line-cover" alt="Basketball Line" onerror="this.src='https://via.placeholder.com/150/1e293b/00ffcc?text=Basketball+Line'">
+        <span class="game-title">Basketball Line</span>
+      </div>
+
+      <div class="game-card" onclick="openGame('https://golfchampions.github.io')">
+        <img src="https://images.crazygames.com/golf-champions/20210901100000/golf-champions-cover" alt="Golf Champions" onerror="this.src='https://via.placeholder.com/150/1e293b/00ffcc?text=Golf+Champions'">
+        <span class="game-title">Golf Champions</span>
+      </div>
+
+      <div class="game-card" onclick="openGame('https://soccerskills.github.io')">
+        <img src="https://images.crazygames.com/soccer-skills-world-cup/20221101100000/soccer-skills-world-cup-cover" alt="Soccer Skills World Cup" onerror="this.src='https://via.placeholder.com/150/1e293b/00ffcc?text=Soccer+Skills'">
+        <span class="game-title">Soccer Skills World ...</span>
+      </div>
+
+      <div class="game-card" onclick="openGame('https://stack.github.io')">
+        <img src="https://images.crazygames.com/stack/20201015100000/stack-cover" alt="Stack" onerror="this.src='https://via.placeholder.com/150/1e293b/00ffcc?text=Stack'">
+        <span class="game-title">Stack</span>
       </div>
 
     </div>
@@ -202,6 +369,15 @@
       document.getElementById('gameModal').style.display = 'none';
       document.getElementById('gameFrame').src = '';
     }
+
+    function changeTheme(themeName) {
+      document.documentElement.setAttribute('data-theme', themeName);
+      localStorage.setItem('siteTheme', themeName);
+    }
+
+    const savedTheme = localStorage.getItem('siteTheme') || 'default';
+    changeTheme(savedTheme);
+    document.getElementById('themeSelector').value = savedTheme;
   </script>
 
 </body>
