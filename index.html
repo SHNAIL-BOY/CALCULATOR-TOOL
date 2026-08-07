@@ -436,4 +436,61 @@
         ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, height); ctx.stroke();
       }
       for (let y = 0; y < height; y += scale) {
-        ctx.beginPath
+        ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(width, y); ctx.stroke();
+      }
+
+      ctx.strokeStyle = '#777';
+      ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.moveTo(0, height / 2); ctx.lineTo(width, height / 2); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(width / 2, 0); ctx.lineTo(width / 2, height); ctx.stroke();
+
+      functions.forEach(fn => {
+        if (!fn.expr.trim()) return;
+
+        ctx.strokeStyle = fn.color;
+        ctx.lineWidth = 2.5;
+        ctx.beginPath();
+
+        let isFirstPoint = true;
+
+        for (let pixelX = 0; pixelX < width; pixelX++) {
+          let x = (pixelX - width / 2) / scale;
+
+          try {
+            let y = Function("x", "return " + fn.expr)(x);
+            let pixelY = height / 2 - (y * scale);
+
+            if (isFirstPoint) {
+              ctx.moveTo(pixelX, pixelY);
+              isFirstPoint = false;
+            } else {
+              ctx.lineTo(pixelX, pixelY);
+            }
+          } catch (err) {}
+        }
+        ctx.stroke();
+      });
+    }
+
+    function convertUnits() {
+      const type = document.getElementById('convType').value;
+      const val = parseFloat(document.getElementById('unitInput').value);
+      const output = document.getElementById('unitOutput');
+
+      if (isNaN(val)) {
+        output.value = "0";
+        return;
+      }
+
+      if (type === 'length') {
+        output.value = (val * 3.28084).toFixed(2) + " Feet";
+      } else if (type === 'weight') {
+        output.value = (val * 2.20462).toFixed(2) + " lbs";
+      } else if (type === 'temp') {
+        output.value = ((val * 9/5) + 32).toFixed(1) + " °F";
+      }
+    }
+  </script>
+
+</body>
+</html>
