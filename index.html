@@ -5,6 +5,50 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>CALCULATOR</title>
   <style>
+    :root {
+      --bg-color: #2b2b2b;
+      --card-bg: #1e1e1e;
+      --input-bg: #111111;
+      --text-color: #ffffff;
+      --accent-color: #00ffcc;
+      --header-bg: rgba(0, 0, 0, 0.3);
+      --btn-bg: #333333;
+      --btn-hover: #444444;
+    }
+
+    [data-theme="neon"] {
+      --bg-color: #09090e;
+      --card-bg: #13131c;
+      --input-bg: #050508;
+      --text-color: #00ffcc;
+      --accent-color: #ff007f;
+      --header-bg: rgba(255, 0, 127, 0.15);
+      --btn-bg: #1f1f2e;
+      --btn-hover: #2d2d42;
+    }
+
+    [data-theme="light"] {
+      --bg-color: #e2e8f0;
+      --card-bg: #ffffff;
+      --input-bg: #f1f5f9;
+      --text-color: #0f172a;
+      --accent-color: #2563eb;
+      --header-bg: rgba(255, 255, 255, 0.8);
+      --btn-bg: #cbd5e1;
+      --btn-hover: #94a3b8;
+    }
+
+    [data-theme="midnight"] {
+      --bg-color: #0b132b;
+      --card-bg: #1c2541;
+      --input-bg: #0b132b;
+      --text-color: #e0e1dd;
+      --accent-color: #4ea8de;
+      --header-bg: rgba(11, 19, 43, 0.6);
+      --btn-bg: #3a506b;
+      --btn-hover: #5bc0be;
+    }
+
     * {
       box-sizing: border-box;
       margin: 0;
@@ -12,19 +56,20 @@
     }
 
     body {
-      background-color: #2b2b2b;
+      background-color: var(--bg-color);
       font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
       display: flex;
       flex-direction: column;
       align-items: center;
       min-height: 100vh;
-      color: #ffffff;
+      color: var(--text-color);
+      transition: background-color 0.3s ease, color 0.3s ease;
     }
 
     /* --- Navigation Header --- */
     header {
       width: 100%;
-      background-color: rgba(0, 0, 0, 0.3);
+      background-color: var(--header-bg);
       padding: 16px 32px;
       display: flex;
       justify-content: space-between;
@@ -33,7 +78,7 @@
     }
 
     .logo {
-      color: #ffffff;
+      color: var(--text-color);
       font-size: 20px;
       font-weight: 700;
       text-decoration: none;
@@ -41,11 +86,12 @@
 
     nav {
       display: flex;
-      gap: 8px;
+      align-items: center;
+      gap: 12px;
     }
 
     nav a {
-      color: #ffffff;
+      color: var(--text-color);
       text-decoration: none;
       font-weight: 600;
       font-size: 14px;
@@ -57,6 +103,17 @@
 
     nav a:hover, nav a.active {
       background-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .theme-select {
+      background: var(--input-bg);
+      color: var(--text-color);
+      border: 1px solid var(--accent-color);
+      padding: 6px 10px;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      outline: none;
     }
 
     .tool-view {
@@ -75,7 +132,7 @@
     /* --- Basic Calculator --- */
     .calc-container {
       margin-top: 30px;
-      background-color: #1e1e1e;
+      background-color: var(--card-bg);
       padding: 24px;
       border-radius: 20px;
       box-shadow: 0 10px 25px rgba(0,0,0,0.5);
@@ -85,10 +142,10 @@
     .calc-display {
       width: 100%;
       height: 60px;
-      background-color: #111111;
+      background-color: var(--input-bg);
       border: none;
       border-radius: 10px;
-      color: #00ffcc;
+      color: var(--accent-color);
       font-size: 28px;
       text-align: right;
       padding: 10px 15px;
@@ -106,26 +163,26 @@
       height: 55px;
       border-radius: 12px;
       border: none;
-      background-color: #333333;
-      color: #ffffff;
+      background-color: var(--btn-bg);
+      color: var(--text-color);
       font-size: 20px;
       font-weight: 600;
       cursor: pointer;
       transition: background 0.2s ease;
     }
 
-    button.calc-btn:hover { background-color: #444444; }
-    button.calc-btn.operator { background-color: #f97316; }
+    button.calc-btn:hover { background-color: var(--btn-hover); }
+    button.calc-btn.operator { background-color: #f97316; color: #fff; }
     button.calc-btn.operator:hover { background-color: #ea580c; }
-    button.calc-btn.clear { background-color: #ef4444; }
+    button.calc-btn.clear { background-color: #ef4444; color: #fff; }
     button.calc-btn.clear:hover { background-color: #dc2626; }
 
-    /* --- Desmos-style Grapher Layout --- */
+    /* --- Desmos Grapher --- */
     .graph-wrapper {
       display: flex;
       gap: 20px;
       width: 100%;
-      background-color: #1e1e1e;
+      background-color: var(--card-bg);
       padding: 20px;
       border-radius: 16px;
       box-shadow: 0 10px 25px rgba(0,0,0,0.5);
@@ -140,7 +197,7 @@
 
     .function-sidebar h3 {
       font-size: 18px;
-      color: #00ffcc;
+      color: var(--accent-color);
       margin-bottom: 5px;
     }
 
@@ -148,7 +205,7 @@
       display: flex;
       align-items: center;
       gap: 8px;
-      background: #111;
+      background: var(--input-bg);
       padding: 8px 12px;
       border-radius: 8px;
     }
@@ -163,7 +220,7 @@
       width: 100%;
       background: transparent;
       border: none;
-      color: #fff;
+      color: var(--text-color);
       font-size: 15px;
       outline: none;
     }
@@ -180,15 +237,15 @@
     }
 
     canvas {
-      background-color: #111111;
+      background-color: var(--input-bg);
       border-radius: 12px;
       flex: 1;
       height: 420px;
     }
 
-    /* --- Expanded Unit Converter --- */
+    /* --- Unit Converter --- */
     .converter-card {
-      background-color: #1e1e1e;
+      background-color: var(--card-bg);
       padding: 24px;
       border-radius: 16px;
       width: 100%;
@@ -209,8 +266,8 @@
       padding: 12px;
       border-radius: 8px;
       border: none;
-      background-color: #111;
-      color: #fff;
+      background-color: var(--input-bg);
+      color: var(--text-color);
       font-size: 15px;
       outline: none;
     }
@@ -224,6 +281,13 @@
       <a onclick="switchTool('basic')" id="nav-basic" class="active">Basic</a>
       <a onclick="switchTool('graph')" id="nav-graph">Graph</a>
       <a onclick="switchTool('converter')" id="nav-converter">Unit Converter</a>
+      
+      <select id="themeSelector" class="theme-select" onchange="changeTheme(this.value)">
+        <option value="default">Dark</option>
+        <option value="neon">Neon</option>
+        <option value="light">Light</option>
+        <option value="midnight">Midnight</option>
+      </select>
     </nav>
   </header>
 
@@ -338,7 +402,18 @@
       }
     }
 
-    /* Multi-Function Colored Canvas Graphing Logic */
+    function changeTheme(themeName) {
+      document.documentElement.setAttribute('data-theme', themeName);
+      localStorage.setItem('siteTheme', themeName);
+      if (document.getElementById('tool-graph').classList.contains('active')) {
+        drawGraph();
+      }
+    }
+
+    const savedTheme = localStorage.getItem('siteTheme') || 'default';
+    changeTheme(savedTheme);
+    document.getElementById('themeSelector').value = savedTheme;
+
     function drawGraph() {
       const canvas = document.getElementById('graphCanvas');
       const ctx = canvas.getContext('2d');
@@ -346,81 +421,19 @@
       const height = canvas.height;
 
       const functions = [
-        { expr: document.getElementById('fn1').value, color: '#ef4444' }, // Red
-        { expr: document.getElementById('fn2').value, color: '#3b82f6' }, // Blue
-        { expr: document.getElementById('fn3').value, color: '#22c55e' }  // Green
+        { expr: document.getElementById('fn1').value, color: '#ef4444' },
+        { expr: document.getElementById('fn2').value, color: '#3b82f6' },
+        { expr: document.getElementById('fn3').value, color: '#22c55e' }
       ];
 
-      // Clear canvas
       ctx.clearRect(0, 0, width, height);
 
-      // Draw Grid & Axes
-      ctx.strokeStyle = '#222';
+      const scale = 25;
+      ctx.strokeStyle = '#333';
       ctx.lineWidth = 1;
-      const scale = 25; // 25 pixels per unit
 
       for (let x = 0; x < width; x += scale) {
         ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, height); ctx.stroke();
       }
       for (let y = 0; y < height; y += scale) {
-        ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(width, y); ctx.stroke();
-      }
-
-      // Main Axes
-      ctx.strokeStyle = '#555';
-      ctx.lineWidth = 2;
-      ctx.beginPath(); ctx.moveTo(0, height / 2); ctx.lineTo(width, height / 2); ctx.stroke();
-      ctx.beginPath(); ctx.moveTo(width / 2, 0); ctx.lineTo(width / 2, height); ctx.stroke();
-
-      // Plot Each Function
-      functions.forEach(fn => {
-        if (!fn.expr.trim()) return;
-
-        ctx.strokeStyle = fn.color;
-        ctx.lineWidth = 2.5;
-        ctx.beginPath();
-
-        let isFirstPoint = true;
-
-        for (let pixelX = 0; pixelX < width; pixelX++) {
-          let x = (pixelX - width / 2) / scale;
-
-          try {
-            let y = Function("x", "return " + fn.expr)(x);
-            let pixelY = height / 2 - (y * scale);
-
-            if (isFirstPoint) {
-              ctx.moveTo(pixelX, pixelY);
-              isFirstPoint = false;
-            } else {
-              ctx.lineTo(pixelX, pixelY);
-            }
-          } catch (err) {}
-        }
-        ctx.stroke();
-      });
-    }
-
-    /* Converter logic */
-    function convertUnits() {
-      const type = document.getElementById('convType').value;
-      const val = parseFloat(document.getElementById('unitInput').value);
-      const output = document.getElementById('unitOutput');
-
-      if (isNaN(val)) {
-        output.value = "0";
-        return;
-      }
-
-      if (type === 'length') {
-        output.value = (val * 3.28084).toFixed(2) + " Feet";
-      } else if (type === 'weight') {
-        output.value = (val * 2.20462).toFixed(2) + " lbs";
-      } else if (type === 'temp') {
-        output.value = ((val * 9/5) + 32).toFixed(1) + " °F";
-      }
-    }
-  </script>
-
-</body>
-</html>
+        ctx.beginPath
