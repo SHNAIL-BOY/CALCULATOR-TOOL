@@ -3,81 +3,82 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Games</title>
+  <title>Learn Math</title>
   <style>
     body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background-color: #121212;
-      color: #ffffff;
+      background-color: #3b82f6; /* Bright blue background */
+      font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
       margin: 0;
-      padding: 0;
-      text-align: center;
+      padding: 40px 20px;
+      display: flex;
+      justify-content: center;
     }
 
-    header {
-      background-color: #1f1f1f;
-      padding: 20px;
-      border-bottom: 2px solid #333;
-    }
-
-    h1 {
-      margin: 0;
-      color: #00ffcc;
-    }
-
-    .container {
-      max-width: 900px;
-      margin: 30px auto;
-      padding: 0 15px;
-    }
-
-    .game-box {
-      background-color: #1e1e1e;
-      border-radius: 12px;
-      padding: 20px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.5);
-    }
-
-    iframe {
+    /* Grid container that adjusts column count automatically */
+    .game-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      gap: 16px;
+      max-width: 1100px;
       width: 100%;
-      height: 600px;
-      border: none;
-      border-radius: 8px;
+    }
+
+    /* Individual game card container */
+    .game-card {
+      background-color: rgba(255, 255, 255, 0.2); /* Semi-transparent border frame */
+      border-radius: 16px;
+      padding: 6px;
+      text-decoration: none;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .game-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.25);
+    }
+
+    /* Thumbnail image styling */
+    .game-card img {
+      width: 100%;
+      aspect-ratio: 1 / 1;
+      object-fit: cover;
+      border-radius: 12px;
+    }
+
+    /* Game title label below image */
+    .game-title {
+      color: #ffffff;
+      font-size: 13px;
+      font-weight: 700;
+      text-align: center;
+      margin-top: 8px;
+      margin-bottom: 4px;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      width: 100%;
     }
   </style>
 </head>
 <body>
 
-  <header>
-    <h1>MADE BY SHNAIL</h1>
-  </header>
+  <div class="game-grid">
+    
+    <a href="#" class="game-card">
+      <img src="https://hextris.github.io/hextris/" alt="Hextris">
+      <span class="game-title">Hextris</span>
+    </a>
 
-  <div class="container">
-    <div class="game-box">
-      <h2>Featured Game: SHNAIL-PLATORMER</h2>
-      <iframe src="https://shnail-platformer.com/" allowfullscreen></iframe>
+        <a href="#" class="game-card">
+      <img src="https://shnail-platformer.com/" alt="SHNAIL-PLATFORMER">
+      <span class="game-title">SHNAIL-PLATFORMER</span>
+    </a>
+
     </div>
-  </div>
-
-  <div class="game-box">
-  <h2>2048</h2>
-  <iframe src="https://gabrielecirulli.github.io/2048/" allowfullscreen></iframe>
-</div>
-
-<div class="game-box">
-  <h2>Hextris</h2>
-  <iframe src="https://hextris.github.io/hextris/" allowfullscreen></iframe>
-</div>
-
-<div class="game-box">
-  <h2>A Dark Room</h2>
-  <iframe src="https://adarkroom.doublespeakgames.com/" allowfullscreen></iframe>
-</div>
-
-<div class="game-box">
-  <h2>Flappy Bird</h2>
-  <iframe src="https://nebez.github.io/floppybird/" allowfullscreen></iframe>
-</div>
 
 </body>
 </html>
