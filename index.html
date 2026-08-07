@@ -5,21 +5,73 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Learn Math</title>
   <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
     body {
       background-color: #4d4444;
       font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-      margin: 0;
-      padding: 40px 20px;
       display: flex;
       flex-direction: column;
       align-items: center;
+      min-height: 100vh;
+    }
+
+    /* --- Top Navigation Header --- */
+    header {
+      width: 100%;
+      background-color: rgba(0, 0, 0, 0.25);
+      backdrop-filter: blur(8px);
+      padding: 16px 32px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    }
+
+    .logo {
+      color: #ffffff;
+      font-size: 22px;
+      font-weight: 800;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    nav {
+      display: flex;
+      gap: 12px;
+    }
+
+    nav a {
+      color: #ffffff;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 15px;
+      padding: 8px 16px;
+      border-radius: 8px;
+      transition: background-color 0.2s ease;
+    }
+
+    nav a:hover {
+      background-color: rgba(255, 255, 255, 0.2);
+    }
+    /* ----------------------------- */
+
+    .content-container {
+      width: 100%;
+      max-width: 1100px;
+      padding: 40px 20px;
     }
 
     .game-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
       gap: 16px;
-      max-width: 1100px;
       width: 100%;
     }
 
@@ -102,17 +154,28 @@
 </head>
 <body>
 
-  <div class="game-grid">
-    <div class="game-card" onclick="openGame('https://hextris.github.io/hextris/')">
-      <img src="https://res.cloudinary.com/dtz0urit6/image/upload/q_auto,f_jpg/cloudinary-tools-uploads/thh256wyndhfvp84ohjk" alt="Hextris">
-      <span class="game-title">Hextris</span>
-    </div>
-  </div>
+  <header>
+    <a href="#" class="logo">🎮 Learn Math</a>
+    <nav>
+      <a href="#">Home</a>
+      <a href="#">All Games</a>
+      <a href="#">About</a>
+    </nav>
+  </header>
 
+  <div class="content-container">
     <div class="game-grid">
-    <div class="game-card" onclick="openGame('https://shnail-platformer.com/')">
-      <img src="https://shnail-platformer.com/favicon.png" alt="SHNAIL-PLAT">
-      <span class="game-title">SHNAIL-PLATFORMER</span>
+      
+      <div class="game-card" onclick="openGame('https://hextris.github.io/hextris/')">
+        <img src="https://res.cloudinary.com/dtz0urit6/image/upload/q_auto,f_jpg/cloudinary-tools-uploads/thh256wyndhfvp84ohjk" alt="Hextris">
+        <span class="game-title">Hextris</span>
+      </div>
+
+      <div class="game-card" onclick="openGame('https://shnail-platformer.com/')">
+        <img src="https://shnail-platformer.com/favicon.png" alt="SHNAIL-PLAT">
+        <span class="game-title">SHNAIL-PLATFORMER</span>
+      </div>
+
     </div>
   </div>
 
