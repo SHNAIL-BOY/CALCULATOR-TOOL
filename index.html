@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Calculator</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: #2b2b2b;
+      font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+      color: #ffffff;
+    }
+
+    header {
+      width: 100%;
+      background-color: rgba(0, 0, 0, 0.3);
+      padding: 16px 32px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo {
+      color: #ffffff;
+      font-size: 20px;
+      font-weight: 700;
+      text-decoration: none;
+    }
+
+    .calc-container {
+      margin-top: 50px;
+      background-color: #1e1e1e;
+      padding: 24px;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+      width: 320px;
+    }
+
+    .calc-display {
+      width: 100%;
+      height: 60px;
+      background-color: #111111;
+      border: none;
+      border-radius: 10px;
+      color: #00ffcc;
+      font-size: 28px;
+      text-align: right;
+      padding: 10px 15px;
+      margin-bottom: 20px;
+      outline: none;
+    }
+
+    .calc-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+    }
+
+    button {
+      height: 55px;
+      border-radius: 12px;
+      border: none;
+      background-color: #333333;
+      color: #ffffff;
+      font-size: 20px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s ease;
+    }
+
+    button:hover { background-color: #444444; }
+    button.operator { background-color: #f97316; }
+    button.operator:hover { background-color: #ea580c; }
+    button.clear { background-color: #ef4444; }
+    button.clear:hover { background-color: #dc2626; }
+  </style>
+</head>
+<body>
+
+  <header>
+    <a href="#" class="logo">📐 Calculator Tool</a>
+  </header>
+
+  <div class="calc-container">
+    <input type="text" class="calc-display" id="display" readonly placeholder="0">
+    <div class="calc-grid">
+      <button class="clear" onclick="clearDisplay()">C</button>
+      <button onclick="appendValue('/')">/</button>
+      <button onclick="appendValue('*')">*</button>
+      <button onclick="appendValue('-')">-</button>
+
+      <button onclick="appendValue('7')">7</button>
+      <button onclick="appendValue('8')">8</button>
+      <button onclick="appendValue('9')">9</button>
+      <button onclick="appendValue('+')">+</button>
+
+      <button onclick="appendValue('4')">4</button>
+      <button onclick="appendValue('5')">5</button>
+      <button onclick="appendValue('6')">6</button>
+      <button class="operator" onclick="calculate()">=</button>
+
+      <button onclick="appendValue('1')">1</button>
+      <button onclick="appendValue('2')">2</button>
+      <button onclick="appendValue('3')">3</button>
+      <button onclick="appendValue('0')">0</button>
+    </div>
+  </div>
+
+  <script>
+    const SECRET_PIN = "4746";
+    let display = document.getElementById('display');
+
+    function appendValue(val) { display.value += val; }
+    function clearDisplay() { display.value = ''; }
+
+    function calculate() {
+      if (display.value === SECRET_PIN) {
+        window.location.href = "games.html";
+        return;
+      }
+
+      try {
+        display.value = eval(display.value);
+      } catch (e) {
+        display.value = 'Error';
+      }
+    }
+  </script>
+
+</body>
+</html>
