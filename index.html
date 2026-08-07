@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CALCULATOR</title>
+  <title>Calculator Suite</title>
   <style>
     * {
       box-sizing: border-box;
@@ -21,6 +21,7 @@
       color: #ffffff;
     }
 
+    /* --- Navigation Header --- */
     header {
       width: 100%;
       background-color: rgba(0, 0, 0, 0.3);
@@ -28,6 +29,7 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
+      backdrop-filter: blur(8px);
     }
 
     .logo {
@@ -37,6 +39,27 @@
       text-decoration: none;
     }
 
+    nav {
+      display: flex;
+      gap: 12px;
+    }
+
+    nav a {
+      color: #ffffff;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 14px;
+      padding: 8px 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+    }
+
+    nav a:hover, nav a.active {
+      background-color: rgba(255, 255, 255, 0.2);
+    }
+
+    /* --- Standard Calculator Styling --- */
     .calc-container {
       margin-top: 50px;
       background-color: #1e1e1e;
@@ -83,15 +106,39 @@
     button.operator:hover { background-color: #ea580c; }
     button.clear { background-color: #ef4444; }
     button.clear:hover { background-color: #dc2626; }
+
+    /* --- Graphing Calculator Embed View --- */
+    .graph-container {
+      display: none; /* Hidden by default */
+      margin-top: 30px;
+      width: 90%;
+      max-width: 900px;
+      height: 550px;
+      background-color: #1e1e1e;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+    }
+
+    .graph-container iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
   </style>
 </head>
 <body>
 
   <header>
-    <a href="#" class="logo">📐 Calculator Tool</a>
+    <a href="#" class="logo" onclick="showStandardCalc()">📐 Calc Suite</a>
+    <nav>
+      <a onclick="showStandardCalc()" id="navStandard" class="active">Basic Calculator</a>
+      <a onclick="showGraphingCalc()" id="navGraphing">Graphing Tool</a>
+      <a href="about.html">About</a>
+    </nav>
   </header>
 
-  <div class="calc-container">
+  <div class="calc-container" id="standardCalc">
     <input type="text" class="calc-display" id="display" readonly placeholder="0">
     <div class="calc-grid">
       <button class="clear" onclick="clearDisplay()">C</button>
@@ -116,14 +163,19 @@
     </div>
   </div>
 
+  <div class="graph-container" id="graphingCalc">
+    <iframe src="https://www.desmos.com/calculator" title="Graphing Calculator"></iframe>
+  </div>
+
   <script>
-    const SECRET_PIN = "4746";
+    const SECRET_PIN = "1337"; // Your passcode
     let display = document.getElementById('display');
 
     function appendValue(val) { display.value += val; }
     function clearDisplay() { display.value = ''; }
 
     function calculate() {
+      // Check for secret passcode trigger
       if (display.value === SECRET_PIN) {
         window.location.href = "games.html";
         return;
@@ -134,6 +186,21 @@
       } catch (e) {
         display.value = 'Error';
       }
+    }
+
+    /* Navigation switching between Standard and Graphing tools */
+    function showStandardCalc() {
+      document.getElementById('standardCalc').style.display = 'block';
+      document.getElementById('graphingCalc').style.display = 'none';
+      document.getElementById('navStandard').classList.add('active');
+      document.getElementById('navGraphing').classList.remove('active');
+    }
+
+    function showGraphingCalc() {
+      document.getElementById('standardCalc').style.display = 'none';
+      document.getElementById('graphingCalc').style.display = 'block';
+      document.getElementById('navStandard').classList.remove('active');
+      document.getElementById('navGraphing').classList.add('active');
     }
   </script>
 
