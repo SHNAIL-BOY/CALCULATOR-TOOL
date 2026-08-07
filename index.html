@@ -42,7 +42,6 @@
     nav {
       display: flex;
       gap: 8px;
-      flex-wrap: wrap;
     }
 
     nav a {
@@ -63,7 +62,7 @@
     .tool-view {
       display: none;
       width: 100%;
-      max-width: 900px;
+      max-width: 950px;
       padding: 20px;
       flex-direction: column;
       align-items: center;
@@ -73,7 +72,7 @@
       display: flex;
     }
 
-    /* --- 1. Basic Calculator --- */
+    /* --- Basic Calculator --- */
     .calc-container {
       margin-top: 30px;
       background-color: #1e1e1e;
@@ -121,65 +120,89 @@
     button.calc-btn.clear { background-color: #ef4444; }
     button.calc-btn.clear:hover { background-color: #dc2626; }
 
-    /* --- 2. Custom Graphing Canvas --- */
-    .graph-card {
+    /* --- Desmos-style Grapher Layout --- */
+    .graph-wrapper {
+      display: flex;
+      gap: 20px;
+      width: 100%;
       background-color: #1e1e1e;
       padding: 20px;
       border-radius: 16px;
-      width: 100%;
       box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+    }
+
+    .function-sidebar {
+      width: 300px;
       display: flex;
       flex-direction: column;
-      align-items: center;
-      gap: 15px;
+      gap: 12px;
     }
 
-    .graph-controls {
-      display: flex;
-      gap: 10px;
-      width: 100%;
-      align-items: center;
-    }
-
-    .graph-controls input {
-      flex: 1;
-      padding: 10px;
-      border-radius: 8px;
-      border: none;
-      background-color: #111;
+    .function-sidebar h3 {
+      font-size: 18px;
       color: #00ffcc;
-      font-size: 16px;
+      margin-bottom: 5px;
+    }
+
+    .fn-input-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: #111;
+      padding: 8px 12px;
+      border-radius: 8px;
+    }
+
+    .fn-indicator {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+    }
+
+    .fn-input-group input {
+      width: 100%;
+      background: transparent;
+      border: none;
+      color: #fff;
+      font-size: 15px;
       outline: none;
     }
 
-    .graph-controls button {
-      padding: 10px 18px;
+    .plot-btn {
+      padding: 12px;
       background-color: #3b82f6;
       border: none;
       border-radius: 8px;
       color: #fff;
       font-weight: bold;
       cursor: pointer;
+      margin-top: 10px;
     }
 
     canvas {
       background-color: #111111;
       border-radius: 12px;
-      width: 100%;
-      max-width: 600px;
-      height: 400px;
+      flex: 1;
+      height: 420px;
     }
 
-    /* --- 3. Unit Converter --- */
+    /* --- Expanded Unit Converter --- */
     .converter-card {
       background-color: #1e1e1e;
       padding: 24px;
       border-radius: 16px;
       width: 100%;
-      max-width: 400px;
+      max-width: 450px;
       display: flex;
       flex-direction: column;
-      gap: 15px;
+      gap: 16px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+    }
+
+    .converter-row {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
     }
 
     .converter-card input, .converter-card select {
@@ -188,33 +211,19 @@
       border: none;
       background-color: #111;
       color: #fff;
-      font-size: 16px;
-    }
-
-    /* --- 4. Formulas Reference --- */
-    .formula-card {
-      background-color: #1e1e1e;
-      padding: 24px;
-      border-radius: 16px;
-      width: 100%;
-      line-height: 1.8;
-    }
-
-    .formula-card h3 {
-      color: #00ffcc;
-      margin-top: 15px;
+      font-size: 15px;
+      outline: none;
     }
   </style>
 </head>
 <body>
 
   <header>
-    <a href="#" class="logo" onclick="switchTool('basic')">📐 CALCULATOR TOOL</a>
+    <a href="#" class="logo" onclick="switchTool('basic')">📐 CALCULATOR</a>
     <nav>
       <a onclick="switchTool('basic')" id="nav-basic" class="active">Basic</a>
       <a onclick="switchTool('graph')" id="nav-graph">Graphing</a>
       <a onclick="switchTool('converter')" id="nav-converter">Unit Converter</a>
-      <a onclick="switchTool('formulas')" id="nav-formulas">Formulas</a>
     </nav>
   </header>
 
@@ -246,48 +255,65 @@
   </div>
 
   <div class="tool-view" id="tool-graph">
-    <div class="graph-card">
-      <h2>Function Grapher</h2>
-      <div class="graph-controls">
-        <span>f(x) =</span>
-        <input type="text" id="graphInput" value="Math.sin(x)" placeholder="e.g. x * x or Math.cos(x)">
-        <button onclick="drawGraph()">Plot Graph</button>
+    <div class="graph-wrapper">
+      <div class="function-sidebar">
+        <h3>Functions</h3>
+        
+        <div class="fn-input-group">
+          <div class="fn-indicator" style="background-color: #ef4444;"></div>
+          <input type="text" id="fn1" value="x * x" placeholder="f(x) e.g. x * x">
+        </div>
+
+        <div class="fn-input-group">
+          <div class="fn-indicator" style="background-color: #3b82f6;"></div>
+          <input type="text" id="fn2" value="Math.sin(x)" placeholder="g(x) e.g. Math.sin(x)">
+        </div>
+
+        <div class="fn-input-group">
+          <div class="fn-indicator" style="background-color: #22c55e;"></div>
+          <input type="text" id="fn3" value="" placeholder="h(x) e.g. 2 * x + 1">
+        </div>
+
+        <button class="plot-btn" onclick="drawGraph()">Plot Functions</button>
       </div>
-      <canvas id="graphCanvas" width="600" height="400"></canvas>
+
+      <canvas id="graphCanvas" width="550" height="420"></canvas>
     </div>
   </div>
 
   <div class="tool-view" id="tool-converter">
     <div class="converter-card">
-      <h2>Length Converter</h2>
-      <label>Meters:</label>
-      <input type="number" id="metersInput" placeholder="Enter meters..." oninput="convertUnits()">
-      <label>Feet:</label>
-      <input type="text" id="feetOutput" readonly placeholder="0">
-    </div>
-  </div>
+      <h2>Unit Converter</h2>
+      
+      <div class="converter-row">
+        <label>Conversion Category:</label>
+        <select id="convType" onchange="convertUnits()">
+          <option value="length">Length (Meters to Feet)</option>
+          <option value="weight">Weight (Kilograms to Pounds)</option>
+          <option value="temp">Temperature (Celsius to Fahrenheit)</option>
+        </select>
+      </div>
 
-  <div class="tool-view" id="tool-formulas">
-    <div class="formula-card">
-      <h2>Common Formulas</h2>
-      <h3>Algebra</h3>
-      <p>Quadratic Formula: <b>x = (-b ± √(b² - 4ac)) / (2a)</b></p>
-      <p>Slope-Intercept Form: <b>y = mx + b</b></p>
-      <h3>Geometry</h3>
-      <p>Area of Circle: <b>A = πr²</b></p>
-      <p>Pythagorean Theorem: <b>a² + b² = c²</b></p>
+      <div class="converter-row">
+        <label id="inputLabel">Input Value:</label>
+        <input type="number" id="unitInput" placeholder="Enter number..." oninput="convertUnits()">
+      </div>
+
+      <div class="converter-row">
+        <label>Converted Result:</label>
+        <input type="text" id="unitOutput" readonly placeholder="0">
+      </div>
     </div>
   </div>
 
   <script>
-    const SECRET_PIN = "4746"; // Your updated passcode!
+    const SECRET_PIN = "4746";
     let display = document.getElementById('display');
 
     function appendValue(val) { display.value += val; }
     function clearDisplay() { display.value = ''; }
 
     function calculate() {
-      // Secret redirect check
       if (display.value === SECRET_PIN) {
         window.location.href = "games.html";
         return;
@@ -300,7 +326,6 @@
       }
     }
 
-    /* Switch active tool tab */
     function switchTool(toolName) {
       document.querySelectorAll('.tool-view').forEach(el => el.classList.remove('active'));
       document.querySelectorAll('nav a').forEach(el => el.classList.remove('active'));
@@ -313,75 +338,6 @@
       }
     }
 
-    /* Native HTML5 Canvas Graph Plotter */
+    /* Multi-Function Colored Canvas Graphing Logic */
     function drawGraph() {
-      const canvas = document.getElementById('graphCanvas');
-      const ctx = canvas.getContext('2d');
-      const width = canvas.width;
-      const height = canvas.height;
-      const expr = document.getElementById('graphInput').value;
-
-      // Clear canvas
-      ctx.clearRect(0, 0, width, height);
-
-      // Draw Axes
-      ctx.strokeStyle = '#444';
-      ctx.lineWidth = 1;
-      
-      // X Axis
-      ctx.beginPath();
-      ctx.moveTo(0, height / 2);
-      ctx.lineTo(width, height / 2);
-      ctx.stroke();
-
-      // Y Axis
-      ctx.beginPath();
-      ctx.moveTo(width / 2, 0);
-      ctx.lineTo(width / 2, height);
-      ctx.stroke();
-
-      // Plot Mathematical Function
-      ctx.strokeStyle = '#00ffcc';
-      ctx.lineWidth = 2;
-      ctx.beginPath();
-
-      const scale = 20; // 20 pixels per grid unit
-      let isFirstPoint = true;
-
-      for (let pixelX = 0; pixelX < width; pixelX++) {
-        // Map pixel X coordinate to graph math coordinate
-        let x = (pixelX - width / 2) / scale;
-        
-        try {
-          // Evaluate current function
-          let y = Function("x", "return " + expr)(x);
-          
-          // Map graph math Y coordinate back to pixel Y coordinate
-          let pixelY = height / 2 - (y * scale);
-
-          if (isFirstPoint) {
-            ctx.moveTo(pixelX, pixelY);
-            isFirstPoint = false;
-          } else {
-            ctx.lineTo(pixelX, pixelY);
-          }
-        } catch (err) {
-          // Ignore evaluation errors
-        }
-      }
-      ctx.stroke();
-    }
-
-    /* Unit Converter logic */
-    function convertUnits() {
-      let meters = parseFloat(document.getElementById('metersInput').value);
-      if (!isNaN(meters)) {
-        document.getElementById('feetOutput').value = (meters * 3.28084).toFixed(2) + " ft";
-      } else {
-        document.getElementById('feetOutput').value = "0";
-      }
-    }
-  </script>
-
-</body>
-</html>
+      const canvas = document.getElementById('graph
