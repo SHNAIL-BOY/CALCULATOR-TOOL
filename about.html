@@ -5,6 +5,38 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>CALCULATOR</title>
   <style>
+    :root {
+      --bg-color: #4d4444;
+      --card-bg: rgba(255, 255, 255, 0.1);
+      --text-color: #ffffff;
+      --header-bg: rgba(0, 0, 0, 0.25);
+      --accent-color: #00ffcc;
+    }
+
+    [data-theme="neon"] {
+      --bg-color: #09090e;
+      --card-bg: rgba(255, 0, 127, 0.15);
+      --text-color: #00ffcc;
+      --header-bg: rgba(255, 0, 127, 0.15);
+      --accent-color: #ff007f;
+    }
+
+    [data-theme="light"] {
+      --bg-color: #cbd5e1;
+      --card-bg: rgba(255, 255, 255, 0.8);
+      --text-color: #0f172a;
+      --header-bg: rgba(255, 255, 255, 0.8);
+      --accent-color: #2563eb;
+    }
+
+    [data-theme="midnight"] {
+      --bg-color: #0b132b;
+      --card-bg: rgba(28, 37, 65, 0.6);
+      --text-color: #e0e1dd;
+      --header-bg: rgba(11, 19, 43, 0.6);
+      --accent-color: #4ea8de;
+    }
+
     * {
       box-sizing: border-box;
       margin: 0;
@@ -12,19 +44,20 @@
     }
 
     body {
-      background-color: #4d4444;
+      background-color: var(--bg-color);
       font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
       display: flex;
       flex-direction: column;
       align-items: center;
       min-height: 100vh;
-      color: #ffffff;
+      color: var(--text-color);
+      transition: background-color 0.3s ease, color 0.3s ease;
     }
 
     /* Top Navigation Header */
     header {
       width: 100%;
-      background-color: rgba(0, 0, 0, 0.25);
+      background-color: var(--header-bg);
       backdrop-filter: blur(8px);
       padding: 16px 32px;
       display: flex;
@@ -34,7 +67,7 @@
     }
 
     .logo {
-      color: #ffffff;
+      color: var(--text-color);
       font-size: 22px;
       font-weight: 800;
       text-decoration: none;
@@ -42,11 +75,12 @@
 
     nav {
       display: flex;
+      align-items: center;
       gap: 12px;
     }
 
     nav a {
-      color: #ffffff;
+      color: var(--text-color);
       text-decoration: none;
       font-weight: 600;
       font-size: 15px;
@@ -59,6 +93,17 @@
       background-color: rgba(255, 255, 255, 0.2);
     }
 
+    .theme-select {
+      background: rgba(0,0,0,0.3);
+      color: var(--text-color);
+      border: 1px solid var(--accent-color);
+      padding: 6px 10px;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      outline: none;
+    }
+
     /* About Content Card */
     .content-container {
       width: 100%;
@@ -67,7 +112,7 @@
     }
 
     .about-card {
-      background-color: rgba(255, 255, 255, 0.1);
+      background-color: var(--card-bg);
       border-radius: 16px;
       padding: 32px;
       box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
@@ -82,18 +127,25 @@
     .about-card p {
       margin-bottom: 16px;
       font-size: 16px;
-      color: #e0e0e0;
+      opacity: 0.9;
     }
   </style>
 </head>
 <body>
 
   <header>
-    <a href="index.html" class="logo">🎮 SHNAIL-UNBLOCKED</a>
+    <a href="index" class="logo">🎮 SHNAIL-UNBLOCKED</a>
     <nav>
       <a href="games">Games</a>
       <a href="about">About</a>
       <a href="index">Calculator</a>
+
+      <select id="themeSelector" class="theme-select" onchange="changeTheme(this.value)">
+        <option value="default">Dark</option>
+        <option value="neon">Neon</option>
+        <option value="light">Light</option>
+        <option value="midnight">Midnight</option>
+      </select>
     </nav>
   </header>
 
@@ -101,9 +153,20 @@
     <div class="about-card">
       <h1>About SHNAIL-UNBLOCKED</h1>
       <p>Welcome to SHNAIL-UNBLOCKED! This website is dedicated to providing fun and fast unblocked browser games for everyone.</p>
-      <p>Whether you're looking for quick arcade puzzles or challenging platformers, we got it all (soon)</p>
+      <p>Whether you're looking for quick arcade puzzles or challenging platformers, we got it all!</p>
     </div>
   </div>
+
+  <script>
+    function changeTheme(themeName) {
+      document.documentElement.setAttribute('data-theme', themeName);
+      localStorage.setItem('siteTheme', themeName);
+    }
+
+    const savedTheme = localStorage.getItem('siteTheme') || 'default';
+    changeTheme(savedTheme);
+    document.getElementById('themeSelector').value = savedTheme;
+  </script>
 
 </body>
 </html>
