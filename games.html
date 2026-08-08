@@ -5,6 +5,50 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>CALCULATOR</title>
   <style>
+    :root {
+      --bg-color: #2b2b2b;
+      --card-bg: #1e1e1e;
+      --input-bg: #111111;
+      --text-color: #ffffff;
+      --accent-color: #00ffcc;
+      --header-bg: rgba(0, 0, 0, 0.3);
+      --btn-bg: #333333;
+      --btn-hover: #444444;
+    }
+
+    [data-theme="neon"] {
+      --bg-color: #09090e;
+      --card-bg: #13131c;
+      --input-bg: #050508;
+      --text-color: #00ffcc;
+      --accent-color: #ff007f;
+      --header-bg: rgba(255, 0, 127, 0.15);
+      --btn-bg: #1f1f2e;
+      --btn-hover: #2d2d42;
+    }
+
+    [data-theme="light"] {
+      --bg-color: #e2e8f0;
+      --card-bg: #ffffff;
+      --input-bg: #f1f5f9;
+      --text-color: #0f172a;
+      --accent-color: #2563eb;
+      --header-bg: rgba(255, 255, 255, 0.8);
+      --btn-bg: #cbd5e1;
+      --btn-hover: #94a3b8;
+    }
+
+    [data-theme="midnight"] {
+      --bg-color: #0b132b;
+      --card-bg: #1c2541;
+      --input-bg: #0b132b;
+      --text-color: #e0e1dd;
+      --accent-color: #4ea8de;
+      --header-bg: rgba(11, 19, 43, 0.6);
+      --btn-bg: #3a506b;
+      --btn-hover: #5bc0be;
+    }
+
     * {
       box-sizing: border-box;
       margin: 0;
@@ -12,18 +56,20 @@
     }
 
     body {
-      background-color: #4d4444;
+      background-color: var(--bg-color);
       font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
       display: flex;
       flex-direction: column;
       align-items: center;
       min-height: 100vh;
+      color: var(--text-color);
+      transition: background-color 0.3s ease, color 0.3s ease;
     }
 
     /* --- Top Navigation Header --- */
     header {
       width: 100%;
-      background-color: rgba(0, 0, 0, 0.25);
+      background-color: var(--header-bg);
       backdrop-filter: blur(8px);
       padding: 16px 32px;
       display: flex;
@@ -33,9 +79,9 @@
     }
 
     .logo {
-      color: #ffffff;
-      font-size: 22px;
-      font-weight: 800;
+      color: var(--text-color);
+      font-size: 20px;
+      font-weight: 700;
       text-decoration: none;
       display: flex;
       align-items: center;
@@ -44,15 +90,16 @@
 
     nav {
       display: flex;
+      align-items: center;
       gap: 12px;
     }
 
     nav a {
-      color: #ffffff;
+      color: var(--text-color);
       text-decoration: none;
       font-weight: 600;
-      font-size: 15px;
-      padding: 8px 16px;
+      font-size: 14px;
+      padding: 8px 14px;
       border-radius: 8px;
       transition: background-color 0.2s ease;
     }
@@ -60,7 +107,17 @@
     nav a:hover {
       background-color: rgba(255, 255, 255, 0.2);
     }
-    /* ----------------------------- */
+
+    .theme-select {
+      background: var(--input-bg);
+      color: var(--text-color);
+      border: 1px solid var(--accent-color);
+      padding: 6px 10px;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      outline: none;
+    }
 
     .content-container {
       width: 100%;
@@ -76,20 +133,21 @@
     }
 
     .game-card {
-      background-color: rgba(255, 255, 255, 0.2);
+      background-color: var(--card-bg);
       border-radius: 16px;
-      padding: 6px;
+      padding: 8px;
       text-decoration: none;
       display: flex;
       flex-direction: column;
       align-items: center;
       cursor: pointer;
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+      transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.3s ease;
     }
 
     .game-card:hover {
       transform: translateY(-4px);
-      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.25);
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
     }
 
     .game-card img {
@@ -97,19 +155,24 @@
       aspect-ratio: 1 / 1;
       object-fit: cover;
       border-radius: 12px;
+      background-color: var(--input-bg);
     }
 
     .game-title {
-      color: #ffffff;
+      color: var(--text-color);
       font-size: 13px;
       font-weight: 700;
       text-align: center;
-      margin-top: 8px;
+      margin-top: 10px;
       margin-bottom: 4px;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
       width: 100%;
+    }
+
+    .game-card:hover .game-title {
+      color: var(--accent-color);
     }
 
     /* Modal Overlay for Playing Games */
@@ -129,20 +192,25 @@
       width: 90%;
       max-width: 900px;
       height: 80vh;
-      background: #000;
+      background: var(--input-bg);
       border-radius: 12px;
       overflow: hidden;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.5);
     }
 
     .close-btn {
       position: absolute;
       top: 10px;
       right: 15px;
-      color: #fff;
+      color: var(--text-color);
       font-size: 28px;
       font-weight: bold;
       cursor: pointer;
       z-index: 1001;
+    }
+
+    .close-btn:hover {
+      color: var(--accent-color);
     }
 
     iframe {
@@ -160,6 +228,13 @@
       <a href="games">Games</a>
       <a href="about">About</a>
       <a href="index">Calculator</a>
+
+      <select id="themeSelector" class="theme-select" onchange="changeTheme(this.value)">
+        <option value="default">Dark</option>
+        <option value="neon">Neon</option>
+        <option value="light">Light</option>
+        <option value="midnight">Midnight</option>
+      </select>
     </nav>
   </header>
 
@@ -180,7 +255,7 @@
         <img src="https://play2048.co/favicon180.png" alt="2048">
         <span class="game-title">2048</span>
       </div>
-
+      
       <div class="game-card" onclick="openGame('https://mspoi.github.io/seraph/games/adofai/index.html')">
         <img src="https://img.itch.zone/aW1nLzE4MDIwODUucG5n/32x32%23/Zy0YL%2B.png" alt="ADOFAI">
         <span class="game-title">ADOFAI</span>
@@ -206,6 +281,15 @@
       document.getElementById('gameModal').style.display = 'none';
       document.getElementById('gameFrame').src = '';
     }
+
+    function changeTheme(themeName) {
+      document.documentElement.setAttribute('data-theme', themeName);
+      localStorage.setItem('siteTheme', themeName);
+    }
+
+    const savedTheme = localStorage.getItem('siteTheme') || 'default';
+    changeTheme(savedTheme);
+    document.getElementById('themeSelector').value = savedTheme;
   </script>
 
 </body>
