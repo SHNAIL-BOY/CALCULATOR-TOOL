@@ -3,7 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CALCULATOR</title>
+  <title id="tabTitle">CALCULATOR</title>
+  <link id="favicon" rel="icon" type="image/x-icon" href="https://ssl.gstatic.com/images/branding/product/1x/calculator_512dp.png">
   <style>
     :root {
       --bg-color: #2b2b2b;
@@ -229,6 +230,14 @@
       <a href="about">About</a>
       <a href="index">Calculator</a>
 
+      <select id="cloakSelector" class="theme-select" onchange="changeCloak(this.value)">
+        <option value="default">Default Cloak</option>
+        <option value="google">Google Search</option>
+        <option value="drive">Google Drive</option>
+        <option value="classroom">Google Classroom</option>
+        <option value="canvas">Canvas</option>
+      </select>
+
       <select id="themeSelector" class="theme-select" onchange="changeTheme(this.value)">
         <option value="default">Dark</option>
         <option value="neon">Neon</option>
@@ -362,6 +371,7 @@
       document.getElementById('gameFrame').src = '';
     }
 
+    /* --- Theme Selector Logic --- */
     function changeTheme(themeName) {
       document.documentElement.setAttribute('data-theme', themeName);
       localStorage.setItem('siteTheme', themeName);
@@ -370,6 +380,58 @@
     const savedTheme = localStorage.getItem('siteTheme') || 'default';
     changeTheme(savedTheme);
     document.getElementById('themeSelector').value = savedTheme;
+
+    /* --- Tab Cloaker Logic --- */
+    const cloaks = {
+      default: {
+        title: 'CALCULATOR',
+        icon: 'https://ssl.gstatic.com/images/branding/product/1x/calculator_512dp.png'
+      },
+      google: {
+        title: 'Google',
+        icon: 'https://www.google.com/favicon.ico'
+      },
+      drive: {
+        title: 'Google Drive - My Drive',
+        icon: 'https://ssl.gstatic.com/images/branding/product/1x/drive_2020q4_32dp.png'
+      },
+      classroom: {
+        title: 'Classes',
+        icon: 'https://ssl.gstatic.com/classroom/favicon.png'
+      },
+      canvas: {
+        title: 'Dashboard',
+        icon: 'https://du11hjcvx0uqb.cloudfront.net/dist/images/favicon-e10d657a73.ico'
+      },
+        mathspace: {
+        title: 'Work :: Mathspace',
+        icon: 'https://mathspace-production-static.mathspace.co/static/cache/2005bc2917ccf92ef5cefd442909e84aa08308b0/website/favicons/android-chrome-192x192.png'
+      }
+    };
+
+    function changeCloak(cloakKey) {
+      const selected = cloaks[cloakKey] || cloaks.default;
+      
+      // Update page title
+      document.title = selected.title;
+
+      // Update favicon
+      let favicon = document.getElementById('favicon');
+      if (!favicon) {
+        favicon = document.createElement('link');
+        favicon.id = 'favicon';
+        favicon.rel = 'icon';
+        document.head.appendChild(favicon);
+      }
+      favicon.href = selected.icon;
+
+      // Save preference
+      localStorage.setItem('siteCloak', cloakKey);
+    }
+
+    const savedCloak = localStorage.getItem('siteCloak') || 'default';
+    changeCloak(savedCloak);
+    document.getElementById('cloakSelector').value = savedCloak;
   </script>
 
 </body>
