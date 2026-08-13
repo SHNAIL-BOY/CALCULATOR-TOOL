@@ -197,27 +197,50 @@
       border-radius: 12px;
       overflow: hidden;
       box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+      display: flex;
+      flex-direction: column;
     }
 
-    .close-btn {
+    .modal-controls {
       position: absolute;
       top: 10px;
       right: 15px;
-      color: var(--text-color);
-      font-size: 28px;
-      font-weight: bold;
-      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 12px;
       z-index: 1001;
     }
 
-    .close-btn:hover {
+    .fullscreen-btn, .close-btn {
+      color: var(--text-color);
+      font-size: 22px;
+      font-weight: bold;
+      cursor: pointer;
+      background: rgba(0, 0, 0, 0.5);
+      border: none;
+      border-radius: 6px;
+      width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: color 0.2s ease, background-color 0.2s ease;
+    }
+
+    .fullscreen-btn:hover, .close-btn:hover {
       color: var(--accent-color);
+      background: rgba(0, 0, 0, 0.8);
+    }
+
+    .close-btn {
+      font-size: 28px;
     }
 
     iframe {
       width: 100%;
       height: 100%;
       border: none;
+      flex-grow: 1;
     }
   </style>
 </head>
@@ -265,11 +288,6 @@
       <div class="game-card" onclick="openGame('https://vexgame-unblocked.github.io/s3/tag/')">
         <img src="https://vexgame-unblocked.github.io/img/tag.png" alt="TAG">
         <span class="game-title">TAG</span>
-      </div>
-
-      <div class="game-card" onclick="openGame('https://vexgame-unblocked.github.io/s/tower-of-destiny/')">
-        <img src="https://vexgame-unblocked.github.io/img/tower-of-destiny.png" alt="TOWEROFDESTINY">
-        <span class="game-title">Tower of Destiny</span>
       </div>
       
       <div class="game-card" onclick="openGame('https://vexgame-unblocked.github.io/s8/masked-forces/')">
@@ -347,18 +365,26 @@
         <span class="game-title">Soccer Skills World Cup</span>
       </div>
 
-      <div class="game-card" onclick="openGame('https://vexgame-unblocked.github.io/s7/jetpack-joyride')">
+      <div class="game-card" onclick="openGame('https://vexgame-unblocked.github.io/s7/jetpack-joyride/')">
         <img src="https://vexgame-unblocked.github.io/img/jetpack-joyride.png" alt="JETPACKJOYRIDE">
         <span class="game-title">Jetpack Joyride</span>
+      </div>
+
+      <div class="game-card" onclick="openGame('https://vexgame-unblocked.github.io/s6/plactions/')">
+        <img src="https://vexgame-unblocked.github.io/img/plactions.png" alt="PLACTIONS">
+        <span class="game-title">Plactions</span>
       </div>
       
     </div>
   </div>
 
   <div id="gameModal" class="modal">
-    <div class="modal-content">
-      <span class="close-btn" onclick="closeGame()">&times;</span>
-      <iframe id="gameFrame" src=""></iframe>
+    <div id="modalContent" class="modal-content">
+      <div class="modal-controls">
+        <button class="fullscreen-btn" onclick="toggleFullscreen()" title="Toggle Fullscreen">⛶</button>
+        <button class="close-btn" onclick="closeGame()" title="Close Game">&times;</button>
+      </div>
+      <iframe id="gameFrame" src="" allowfullscreen></iframe>
     </div>
   </div>
 
@@ -369,8 +395,33 @@
     }
 
     function closeGame() {
+      if (document.fullscreenElement) {
+        document.exitFullscreen();
+      }
       document.getElementById('gameModal').style.display = 'none';
       document.getElementById('gameFrame').src = '';
+    }
+
+    /* --- Fullscreen Mode Toggle --- */
+    function toggleFullscreen() {
+      const modalContent = document.getElementById('modalContent');
+      if (!document.fullscreenElement) {
+        if (modalContent.requestFullscreen) {
+          modalContent.requestFullscreen();
+        } else if (modalContent.webkitRequestFullscreen) { /* Safari */
+          modalContent.webkitRequestFullscreen();
+        } else if (modalContent.msRequestFullscreen) { /* IE11 */
+          modalContent.msRequestFullscreen();
+        }
+      } else {
+        if (document.exitFullscreen) {
+          document.exitFullscreen();
+        } else if (document.webkitExitFullscreen) {
+          document.webkitExitFullscreen();
+        } else if (document.msExitFullscreen) {
+          document.msExitFullscreen();
+        }
+      }
     }
 
     /* --- Theme Selector Logic --- */
@@ -409,7 +460,7 @@
         title: 'Education Perfect',
         icon: 'https://app.educationperfect.com/favicon.ico'
       },
-        mathspace: {
+      mathspace: {
         title: 'Work :: Mathspace',
         icon: 'https://mathspace-production-static.mathspace.co/static/cache/2005bc2917ccf92ef5cefd442909e84aa08308b0/website/favicons/android-chrome-192x192.png'
       }
