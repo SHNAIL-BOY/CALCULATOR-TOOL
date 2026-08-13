@@ -69,6 +69,9 @@
 
     /* --- Top Navigation Header --- */
     header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
       width: 100%;
       background-color: var(--header-bg);
       backdrop-filter: blur(8px);
@@ -123,7 +126,69 @@
     .content-container {
       width: 100%;
       max-width: 1100px;
-      padding: 40px 20px;
+      padding: 30px 20px 40px;
+    }
+
+    /* --- Search & Filter Controls --- */
+    .controls-bar {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      margin-bottom: 24px;
+      width: 100%;
+    }
+
+    .search-input {
+      width: 100%;
+      background-color: var(--card-bg);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: var(--text-color);
+      padding: 12px 18px;
+      border-radius: 12px;
+      font-size: 15px;
+      outline: none;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .search-input:focus {
+      border-color: var(--accent-color);
+      box-shadow: 0 0 8px rgba(0, 255, 204, 0.2);
+    }
+
+    .filter-tags {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .tag-btn {
+      background-color: var(--btn-bg);
+      color: var(--text-color);
+      border: none;
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background-color 0.2s ease, color 0.2s ease, transform 0.1s ease;
+    }
+
+    .tag-btn:hover {
+      background-color: var(--btn-hover);
+    }
+
+    .tag-btn.active {
+      background-color: var(--accent-color);
+      color: #000;
+    }
+
+    .no-results {
+      display: none;
+      text-align: center;
+      padding: 40px;
+      color: var(--text-color);
+      font-size: 16px;
+      opacity: 0.7;
     }
 
     .game-grid {
@@ -149,6 +214,10 @@
     .game-card:hover {
       transform: translateY(-4px);
       box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+    }
+
+    .game-card.hidden {
+      display: none !important;
     }
 
     .game-card img {
@@ -273,104 +342,118 @@
   </header>
 
   <div class="content-container">
-    <div class="game-grid">
 
-      <div class="game-card" onclick="openGame('https://daocloud.github.io/dao-2048/')">
+    <div class="controls-bar">
+      <input type="text" id="searchInput" class="search-input" placeholder="🔍 Search games..." oninput="filterGames()">
+      <div class="filter-tags">
+        <button class="tag-btn active" onclick="setCategory('all', this)">All</button>
+        <button class="tag-btn" onclick="setCategory('arcade', this)">Arcade</button>
+        <button class="tag-btn" onclick="setCategory('action', this)">Action</button>
+        <button class="tag-btn" onclick="setCategory('sports', this)">Sports</button>
+        <button class="tag-btn" onclick="setCategory('puzzle', this)">Puzzle</button>
+      </div>
+    </div>
+
+    <div id="noResults" class="no-results">No games found matching your search.</div>
+
+    <div class="game-grid" id="gameGrid">
+
+      <div class="game-card" data-name="2048" data-category="puzzle" onclick="openGame('https://daocloud.github.io/dao-2048/')">
         <img src="https://play2048.co/favicon180.png" alt="2048">
         <span class="game-title">2048</span>
       </div>
       
-      <div class="game-card" onclick="openGame('https://vexgame-unblocked.github.io/s8/a-dance-of-fire-and-ice/')">
+      <div class="game-card" data-name="a dance of fire and ice adofai" data-category="arcade" onclick="openGame('https://vexgame-unblocked.github.io/s8/a-dance-of-fire-and-ice/')">
         <img src="https://vexgame-unblocked.github.io/img/a-dance-of-fire-and-ice.png" alt="ADOFAI">
         <span class="game-title">ADOFAI</span>
       </div>
       
-      <div class="game-card" onclick="openGame('https://vexgame-unblocked.github.io/s3/tag/')">
+      <div class="game-card" data-name="tag" data-category="action" onclick="openGame('https://vexgame-unblocked.github.io/s3/tag/')">
         <img src="https://vexgame-unblocked.github.io/img/tag.png" alt="TAG">
         <span class="game-title">TAG</span>
       </div>
       
-      <div class="game-card" onclick="openGame('https://vexgame-unblocked.github.io/s8/masked-forces/')">
+      <div class="game-card" data-name="masked forces" data-category="action" onclick="openGame('https://vexgame-unblocked.github.io/s8/masked-forces/')">
         <img src="https://vexgame-unblocked.github.io/img/masked-forces.png" alt="MASKEDFORCES">
         <span class="game-title">Masked Forces</span>
       </div>
 
-      <div class="game-card" onclick="openGame('https://vexgame-unblocked.github.io/s/rooftop-snipers/')">
+      <div class="game-card" data-name="rooftop snipers" data-category="action" onclick="openGame('https://vexgame-unblocked.github.io/s/rooftop-snipers/')">
         <img src="https://vexgame-unblocked.github.io/img/rooftop-snipers.png" alt="ROOFTOPSNIPER">
         <span class="game-title">Rooftop Snipers</span>
       </div>
 
-      <div class="game-card" onclick="openGame('https://vexgame-unblocked.github.io/s/slope/')">
+      <div class="game-card" data-name="slope" data-category="arcade" onclick="openGame('https://vexgame-unblocked.github.io/s/slope/')">
         <img src="https://vexgame-unblocked.github.io/img/slope.png" alt="SLOPE">
         <span class="game-title">Slope</span>
       </div>
       
-      <div class="game-card" onclick="openGame('https://vexgame-unblocked.github.io/s6/slope-2/')">
+      <div class="game-card" data-name="slope 2" data-category="arcade" onclick="openGame('https://vexgame-unblocked.github.io/s6/slope-2/')">
         <img src="https://vexgame-unblocked.github.io/img/slope-2.png" alt="SLOPE2">
         <span class="game-title">Slope 2</span>
       </div>
       
-      <div class="game-card" onclick="openGame('https://vexgame-unblocked.github.io/s/slope-3/')">
+      <div class="game-card" data-name="slope 3" data-category="arcade" onclick="openGame('https://vexgame-unblocked.github.io/s/slope-3/')">
         <img src="https://vexgame-unblocked.github.io/img/slope-3.png" alt="SLOPE3">
         <span class="game-title">Slope 3</span>
       </div>
       
-      <div class="game-card" onclick="openGame('https://vexgame-unblocked.github.io/s/tunnel-rush/')">
+      <div class="game-card" data-name="tunnel rush" data-category="arcade" onclick="openGame('https://vexgame-unblocked.github.io/s/tunnel-rush/')">
         <img src="https://vexgame-unblocked.github.io/img/tunnel-rush.png" alt="TUNNELRUSH">
         <span class="game-title">Tunnel Rush</span>
       </div>
       
-      <div class="game-card" onclick="openGame('https://vexgame-unblocked.github.io/s9/wordle-unlimited/')">
+      <div class="game-card" data-name="wordle unlimited" data-category="puzzle" onclick="openGame('https://vexgame-unblocked.github.io/s9/wordle-unlimited/')">
         <img src="https://vexgame-unblocked.github.io/img/wordle-unlimited.png" alt="WORDLE">
         <span class="game-title">Wordle Unlimited</span>
       </div>
 
-      <div class="game-card" onclick="openGame('https://vexgame-unblocked.github.io/s/basketball-stars/')">
+      <div class="game-card" data-name="basketball stars" data-category="sports" onclick="openGame('https://vexgame-unblocked.github.io/s/basketball-stars/')">
         <img src="https://vexgame-unblocked.github.io/img/basketball-stars.png" alt="BASKETBALLSTAR">
         <span class="game-title">Basketball Stars</span>
       </div>
       
-      <div class="game-card" onclick="openGame('https://vexgame-unblocked.github.io/s2/a-small-world-cup/')">
+      <div class="game-card" data-name="a small world cup" data-category="sports" onclick="openGame('https://vexgame-unblocked.github.io/s2/a-small-world-cup/')">
         <img src="https://vexgame-unblocked.github.io/img/a-small-world-cup.png" alt="SMALLWORLDCUP">
         <span class="game-title">A Small World Cup</span>
       </div>
 
-      <div class="game-card" onclick="openGame('https://vexgame-unblocked.github.io/s/stickman-hook/')">
+      <div class="game-card" data-name="stickman hook" data-category="action" onclick="openGame('https://vexgame-unblocked.github.io/s/stickman-hook/')">
         <img src="https://vexgame-unblocked.github.io/img/stickman-hook.png" alt="STICKMANHOOK">
         <span class="game-title">Stickman Hook</span>
       </div>
 
-      <div class="game-card" onclick="openGame('https://vexgame-unblocked.github.io/s7/master-chess/')">
+      <div class="game-card" data-name="master chess" data-category="puzzle" onclick="openGame('https://vexgame-unblocked.github.io/s7/master-chess/')">
         <img src="https://vexgame-unblocked.github.io/img/master-chess.png" alt="MASTERCHESS">
         <span class="game-title">Master Chess</span>
       </div>
 
-      <div class="game-card" onclick="openGame('https://vexgame-unblocked.github.io/s2/stack/')">
+      <div class="game-card" data-name="stack" data-category="arcade" onclick="openGame('https://vexgame-unblocked.github.io/s2/stack/')">
         <img src="https://vexgame-unblocked.github.io/img/stack.png" alt="STACK">
         <span class="game-title">Stack</span>
       </div>
 
-      <div class="game-card" onclick="openGame('https://vexgame-unblocked.github.io/s3/top-speed-3d/')">
+      <div class="game-card" data-name="top speed 3d" data-category="action" onclick="openGame('https://vexgame-unblocked.github.io/s3/top-speed-3d/')">
         <img src="https://vexgame-unblocked.github.io/img/top-speed-3d.png" alt="TOPSPEED">
         <span class="game-title">Top Speed 3D</span>
       </div>
 
-      <div class="game-card" onclick="openGame('https://vexgame-unblocked.github.io/s/there-is-no-game/')">
+      <div class="game-card" data-name="there is no game" data-category="puzzle" onclick="openGame('https://vexgame-unblocked.github.io/s/there-is-no-game/')">
         <img src="https://vexgame-unblocked.github.io/img/there-is-no-game.png" alt="THEREISNOGAME">
         <span class="game-title">There Is No Game</span>
       </div>
 
-      <div class="game-card" onclick="openGame('https://vexgame-unblocked.github.io/s6/soccer-skills-world-cup/#topvaz/')">
+      <div class="game-card" data-name="soccer skills world cup" data-category="sports" onclick="openGame('https://vexgame-unblocked.github.io/s6/soccer-skills-world-cup/#topvaz/')">
         <img src="https://vexgame-unblocked.github.io/img/soccer-skills-world-cup.png" alt="SOCCERSKILLWRLDCUP">
         <span class="game-title">Soccer Skills World Cup</span>
       </div>
 
-      <div class="game-card" onclick="openGame('https://vexgame-unblocked.github.io/s7/jetpack-joyride/')">
+      <div class="game-card" data-name="jetpack joyride" data-category="action" onclick="openGame('https://vexgame-unblocked.github.io/s7/jetpack-joyride/')">
         <img src="https://vexgame-unblocked.github.io/img/jetpack-joyride.png" alt="JETPACKJOYRIDE">
         <span class="game-title">Jetpack Joyride</span>
       </div>
 
-      <div class="game-card" onclick="openGame('https://vexgame-unblocked.github.io/s6/plactions/')">
+      <div class="game-card" data-name="plactions" data-category="puzzle" onclick="openGame('https://vexgame-unblocked.github.io/s6/plactions/')">
         <img src="https://vexgame-unblocked.github.io/img/plactions.png" alt="PLACTIONS">
         <span class="game-title">Plactions</span>
       </div>
@@ -408,9 +491,9 @@
       if (!document.fullscreenElement) {
         if (modalContent.requestFullscreen) {
           modalContent.requestFullscreen();
-        } else if (modalContent.webkitRequestFullscreen) { /* Safari */
+        } else if (modalContent.webkitRequestFullscreen) {
           modalContent.webkitRequestFullscreen();
-        } else if (modalContent.msRequestFullscreen) { /* IE11 */
+        } else if (modalContent.msRequestFullscreen) {
           modalContent.msRequestFullscreen();
         }
       } else {
@@ -422,6 +505,39 @@
           document.msExitFullscreen();
         }
       }
+    }
+
+    /* --- Search & Category Filtering Logic --- */
+    let currentCategory = 'all';
+
+    function setCategory(cat, btn) {
+      currentCategory = cat;
+      document.querySelectorAll('.tag-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      filterGames();
+    }
+
+    function filterGames() {
+      const query = document.getElementById('searchInput').value.toLowerCase().trim();
+      const cards = document.querySelectorAll('.game-card');
+      let visibleCount = 0;
+
+      cards.forEach(card => {
+        const name = card.getAttribute('data-name').toLowerCase();
+        const category = card.getAttribute('data-category');
+
+        const matchesQuery = name.includes(query);
+        const matchesCategory = currentCategory === 'all' || category === currentCategory;
+
+        if (matchesQuery && matchesCategory) {
+          card.classList.remove('hidden');
+          visibleCount++;
+        } else {
+          card.classList.add('hidden');
+        }
+      });
+
+      document.getElementById('noResults').style.display = visibleCount === 0 ? 'block' : 'none';
     }
 
     /* --- Theme Selector Logic --- */
@@ -469,10 +585,8 @@
     function changeCloak(cloakKey) {
       const selected = cloaks[cloakKey] || cloaks.default;
       
-      // Update page title
       document.title = selected.title;
 
-      // Update favicon
       let favicon = document.getElementById('favicon');
       if (!favicon) {
         favicon = document.createElement('link');
@@ -482,7 +596,6 @@
       }
       favicon.href = selected.icon;
 
-      // Save preference
       localStorage.setItem('siteCloak', cloakKey);
     }
 
