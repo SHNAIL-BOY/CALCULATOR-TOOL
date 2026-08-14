@@ -347,6 +347,7 @@
       <input type="text" id="searchInput" class="search-input" placeholder="🔍 Search games..." oninput="filterGames()">
       <div class="filter-tags">
         <button class="tag-btn active" onclick="setCategory('all', this)">All</button>
+        <button class="tag-btn" onclick="setCategory('popular', this)">🔥 Popular</button>
         <button class="tag-btn" onclick="setCategory('arcade', this)">Arcade</button>
         <button class="tag-btn" onclick="setCategory('action', this)">Action</button>
         <button class="tag-btn" onclick="setCategory('sports', this)">Sports</button>
@@ -363,12 +364,12 @@
         <span class="game-title">2048</span>
       </div>
       
-      <div class="game-card" data-name="a dance of fire and ice adofai" data-category="arcade" onclick="openGame('https://vexgame-unblocked.github.io/s8/a-dance-of-fire-and-ice/')">
+      <div class="game-card" data-name="a dance of fire and ice adofai" data-category="popular arcade" onclick="openGame('https://vexgame-unblocked.github.io/s8/a-dance-of-fire-and-ice/')">
         <img src="https://vexgame-unblocked.github.io/img/a-dance-of-fire-and-ice.png" alt="ADOFAI">
         <span class="game-title">ADOFAI</span>
       </div>
       
-      <div class="game-card" data-name="tag" data-category="arcade" onclick="openGame('https://vexgame-unblocked.github.io/s3/tag/')">
+      <div class="game-card" data-name="tag" data-category="popular arcade" onclick="openGame('https://vexgame-unblocked.github.io/s3/tag/')">
         <img src="https://vexgame-unblocked.github.io/img/tag.png" alt="TAG">
         <span class="game-title">TAG</span>
       </div>
@@ -378,12 +379,17 @@
         <span class="game-title">Masked Forces</span>
       </div>
 
-      <div class="game-card" data-name="rooftop snipers" data-category="action" onclick="openGame('https://vexgame-unblocked.github.io/s/rooftop-snipers/')">
+      <div class="game-card" data-name="rooftop snipers" data-category="popular action" onclick="openGame('https://vexgame-unblocked.github.io/s/rooftop-snipers/')">
         <img src="https://vexgame-unblocked.github.io/img/rooftop-snipers.png" alt="ROOFTOPSNIPER">
         <span class="game-title">Rooftop Snipers</span>
       </div>
 
-      <div class="game-card" data-name="slope" data-category="arcade" onclick="openGame('https://vexgame-unblocked.github.io/s/slope/')">
+      <div class="game-card" data-name="getaway shootout" data-category="action" onclick="openGame('https://vexgame-unblocked.github.io/s4/getaway-shootout/')">
+        <img src="https://vexgame-unblocked.github.io/img/getaway-shootout.png" alt="GETAWAYSHOOTOUT">
+        <span class="game-title">Getaway Shootout</span>
+      </div>
+
+      <div class="game-card" data-name="slope" data-category="popular arcade" onclick="openGame('https://vexgame-unblocked.github.io/s/slope/')">
         <img src="https://vexgame-unblocked.github.io/img/slope.png" alt="SLOPE">
         <span class="game-title">Slope</span>
       </div>
@@ -393,12 +399,12 @@
         <span class="game-title">Slope 2</span>
       </div>
       
-      <div class="game-card" data-name="slope 3" data-category="arcade" onclick="openGame('https://vexgame-unblocked.github.io/s/slope-3/')">
+      <div class="game-card" data-name="slope 3" data-category="popular arcade" onclick="openGame('https://vexgame-unblocked.github.io/s/slope-3/')">
         <img src="https://vexgame-unblocked.github.io/img/slope-3.png" alt="SLOPE3">
         <span class="game-title">Slope 3</span>
       </div>
       
-      <div class="game-card" data-name="tunnel rush" data-category="arcade" onclick="openGame('https://vexgame-unblocked.github.io/s/tunnel-rush/')">
+      <div class="game-card" data-name="tunnel rush" data-category="popular arcade" onclick="openGame('https://vexgame-unblocked.github.io/s/tunnel-rush/')">
         <img src="https://vexgame-unblocked.github.io/img/tunnel-rush.png" alt="TUNNELRUSH">
         <span class="game-title">Tunnel Rush</span>
       </div>
@@ -408,7 +414,7 @@
         <span class="game-title">Wordle Unlimited</span>
       </div>
 
-      <div class="game-card" data-name="basketball stars" data-category="sports" onclick="openGame('https://vexgame-unblocked.github.io/s/basketball-stars/')">
+      <div class="game-card" data-name="basketball stars" data-category="popular sports" onclick="openGame('https://vexgame-unblocked.github.io/s/basketball-stars/')">
         <img src="https://vexgame-unblocked.github.io/img/basketball-stars.png" alt="BASKETBALLSTAR">
         <span class="game-title">Basketball Stars</span>
       </div>
@@ -438,7 +444,7 @@
         <span class="game-title">Top Speed 3D</span>
       </div>
 
-      <div class="game-card" data-name="escape road" data-category="action" onclick="openGame('https://escaperoadx.github.io/escaperoad/index.html')">
+      <div class="game-card" data-name="escape road" data-category="popular action" onclick="openGame('https://escaperoadx.github.io/escaperoad/index.html')">
         <img src="https://escaperoadx.com/static/uploads/media/2025/8/a7ae14f55f924ab6b3602d6a8d98f358.png" alt="ESCAPEROAD">
         <span class="game-title">Escape Road</span>
       </div>
@@ -529,10 +535,10 @@
 
       cards.forEach(card => {
         const name = card.getAttribute('data-name').toLowerCase();
-        const category = card.getAttribute('data-category');
+        const categories = card.getAttribute('data-category').split(' ');
 
         const matchesQuery = name.includes(query);
-        const matchesCategory = currentCategory === 'all' || category === currentCategory;
+        const matchesCategory = currentCategory === 'all' || categories.includes(currentCategory);
 
         if (matchesQuery && matchesCategory) {
           card.classList.remove('hidden');
@@ -571,7 +577,7 @@
       },
       classroom: {
         title: 'Classes',
-        icon: 'https://ssl.gstatic.com/classroom/favicon.png'
+        icon: 'https://ssl.classroom.google.com/favicon.png'
       },
       stile: {
         title: 'Stile',
