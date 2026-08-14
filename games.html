@@ -123,10 +123,51 @@
       outline: none;
     }
 
+    .settings-icon-btn {
+      background: var(--input-bg);
+      color: var(--text-color);
+      border: 1px solid var(--accent-color);
+      padding: 6px 10px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background-color 0.2s ease, transform 0.1s ease;
+    }
+
+    .settings-icon-btn:hover {
+      background: var(--accent-color);
+      color: #000;
+    }
+
     .content-container {
       width: 100%;
       max-width: 1100px;
       padding: 30px 20px 40px;
+    }
+
+    /* --- Recently Played Section --- */
+    .section-title {
+      font-size: 16px;
+      font-weight: 700;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--text-color);
+    }
+
+    .recent-container {
+      margin-bottom: 24px;
+      display: none;
+    }
+
+    .recent-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+      gap: 14px;
     }
 
     /* --- Search & Filter Controls --- */
@@ -134,12 +175,18 @@
       display: flex;
       flex-direction: column;
       gap: 14px;
-      margin-bottom: 24px;
+      margin-bottom: 20px;
+      width: 100%;
+    }
+
+    .search-row {
+      display: flex;
+      gap: 10px;
       width: 100%;
     }
 
     .search-input {
-      width: 100%;
+      flex: 1;
       background-color: var(--card-bg);
       border: 1px solid rgba(255, 255, 255, 0.1);
       color: var(--text-color);
@@ -155,10 +202,31 @@
       box-shadow: 0 0 8px rgba(0, 255, 204, 0.2);
     }
 
+    .action-btn {
+      background-color: var(--card-bg);
+      border: 1px solid var(--accent-color);
+      color: var(--text-color);
+      padding: 0 18px;
+      border-radius: 12px;
+      font-weight: 700;
+      font-size: 14px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: background-color 0.2s ease, transform 0.1s ease;
+    }
+
+    .action-btn:hover {
+      background-color: var(--accent-color);
+      color: #000;
+    }
+
     .filter-tags {
       display: flex;
       gap: 8px;
       flex-wrap: wrap;
+      align-items: center;
     }
 
     .tag-btn {
@@ -182,6 +250,13 @@
       color: #000;
     }
 
+    .game-count {
+      margin-left: auto;
+      font-size: 13px;
+      opacity: 0.7;
+      font-weight: 600;
+    }
+
     .no-results {
       display: none;
       text-align: center;
@@ -199,6 +274,7 @@
     }
 
     .game-card {
+      position: relative;
       background-color: var(--card-bg);
       border-radius: 16px;
       padding: 8px;
@@ -218,6 +294,34 @@
 
     .game-card.hidden {
       display: none !important;
+    }
+
+    .fav-btn {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      background: rgba(0, 0, 0, 0.6);
+      border: none;
+      color: #888;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 15px;
+      cursor: pointer;
+      backdrop-filter: blur(4px);
+      transition: color 0.2s ease, transform 0.2s ease;
+      z-index: 2;
+    }
+
+    .fav-btn:hover {
+      transform: scale(1.15);
+    }
+
+    .fav-btn.active {
+      color: #ffcc00;
     }
 
     .game-card img {
@@ -245,7 +349,7 @@
       color: var(--accent-color);
     }
 
-    /* Modal Overlay for Playing Games */
+    /* Modal Overlay for Playing Games & Settings */
     .modal {
       display: none;
       position: fixed;
@@ -268,6 +372,46 @@
       box-shadow: 0 10px 25px rgba(0,0,0,0.5);
       display: flex;
       flex-direction: column;
+    }
+
+    .settings-modal-content {
+      background: var(--card-bg);
+      padding: 24px;
+      border-radius: 16px;
+      width: 90%;
+      max-width: 480px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      color: var(--text-color);
+      border: 1px solid var(--accent-color);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    }
+
+    .settings-field {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .settings-field label {
+      font-size: 13px;
+      font-weight: 600;
+      opacity: 0.9;
+    }
+
+    .settings-field input {
+      background-color: var(--input-bg);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: var(--text-color);
+      padding: 10px;
+      border-radius: 8px;
+      font-size: 14px;
+      outline: none;
+    }
+
+    .settings-field input:focus {
+      border-color: var(--accent-color);
     }
 
     .modal-controls {
@@ -338,20 +482,34 @@
         <option value="light">Light</option>
         <option value="midnight">Midnight</option>
       </select>
+
+      <button class="settings-icon-btn" onclick="openSettingsModal()" title="Panic Key Settings">⚙️</button>
     </nav>
   </header>
 
   <div class="content-container">
 
+    <div id="recentContainer" class="recent-container">
+      <div class="section-title">🕒 Recently Played</div>
+      <div class="recent-grid" id="recentGrid"></div>
+    </div>
+
     <div class="controls-bar">
-      <input type="text" id="searchInput" class="search-input" placeholder="🔍 Search games..." oninput="filterGames()">
+      <div class="search-row">
+        <input type="text" id="searchInput" class="search-input" placeholder="🔍 Search games..." oninput="filterGames()">
+        <button class="action-btn" onclick="playRandomGame()" title="Play a random game">🎲 Random Game</button>
+      </div>
+
       <div class="filter-tags">
         <button class="tag-btn active" onclick="setCategory('all', this)">All</button>
+        <button class="tag-btn" onclick="setCategory('favorites', this)">⭐ Favorites</button>
         <button class="tag-btn" onclick="setCategory('popular', this)">🔥 Popular</button>
         <button class="tag-btn" onclick="setCategory('arcade', this)">Arcade</button>
         <button class="tag-btn" onclick="setCategory('action', this)">Action</button>
         <button class="tag-btn" onclick="setCategory('sports', this)">Sports</button>
         <button class="tag-btn" onclick="setCategory('puzzle', this)">Puzzle</button>
+
+        <span class="game-count" id="gameCount">Showing 0 games</span>
       </div>
     </div>
 
@@ -359,112 +517,134 @@
 
     <div class="game-grid" id="gameGrid">
 
-      <div class="game-card" data-name="2048" data-category="puzzle" onclick="openGame('https://daocloud.github.io/dao-2048/')">
+      <div class="game-card" data-id="2048" data-name="2048" data-category="puzzle" onclick="openGame('2048', 'https://daocloud.github.io/dao-2048/')">
+        <button class="fav-btn" onclick="toggleFavorite(event, '2048')">★</button>
         <img src="https://play2048.co/favicon180.png" alt="2048">
         <span class="game-title">2048</span>
       </div>
       
-      <div class="game-card" data-name="a dance of fire and ice adofai" data-category="popular arcade" onclick="openGame('https://vexgame-unblocked.github.io/s8/a-dance-of-fire-and-ice/')">
+      <div class="game-card" data-id="adofai" data-name="a dance of fire and ice adofai" data-category="popular arcade" onclick="openGame('adofai', 'https://vexgame-unblocked.github.io/s8/a-dance-of-fire-and-ice/')">
+        <button class="fav-btn" onclick="toggleFavorite(event, 'adofai')">★</button>
         <img src="https://vexgame-unblocked.github.io/img/a-dance-of-fire-and-ice.png" alt="ADOFAI">
         <span class="game-title">ADOFAI</span>
       </div>
       
-      <div class="game-card" data-name="tag" data-category="popular arcade" onclick="openGame('https://vexgame-unblocked.github.io/s3/tag/')">
+      <div class="game-card" data-id="tag" data-name="tag" data-category="popular arcade" onclick="openGame('tag', 'https://vexgame-unblocked.github.io/s3/tag/')">
+        <button class="fav-btn" onclick="toggleFavorite(event, 'tag')">★</button>
         <img src="https://vexgame-unblocked.github.io/img/tag.png" alt="TAG">
         <span class="game-title">TAG</span>
       </div>
       
-      <div class="game-card" data-name="masked forces" data-category="action" onclick="openGame('https://vexgame-unblocked.github.io/s8/masked-forces/')">
+      <div class="game-card" data-id="masked-forces" data-name="masked forces" data-category="action" onclick="openGame('masked-forces', 'https://vexgame-unblocked.github.io/s8/masked-forces/')">
+        <button class="fav-btn" onclick="toggleFavorite(event, 'masked-forces')">★</button>
         <img src="https://vexgame-unblocked.github.io/img/masked-forces.png" alt="MASKEDFORCES">
         <span class="game-title">Masked Forces</span>
       </div>
 
-      <div class="game-card" data-name="rooftop snipers" data-category="popular action" onclick="openGame('https://vexgame-unblocked.github.io/s/rooftop-snipers/')">
+      <div class="game-card" data-id="rooftop-snipers" data-name="rooftop snipers" data-category="popular action" onclick="openGame('rooftop-snipers', 'https://vexgame-unblocked.github.io/s/rooftop-snipers/')">
+        <button class="fav-btn" onclick="toggleFavorite(event, 'rooftop-snipers')">★</button>
         <img src="https://vexgame-unblocked.github.io/img/rooftop-snipers.png" alt="ROOFTOPSNIPER">
         <span class="game-title">Rooftop Snipers</span>
       </div>
 
-      <div class="game-card" data-name="getaway shootout" data-category="action" onclick="openGame('https://vexgame-unblocked.github.io/s4/getaway-shootout/')">
+      <div class="game-card" data-id="getaway-shootout" data-name="getaway shootout" data-category="action" onclick="openGame('getaway-shootout', 'https://vexgame-unblocked.github.io/s4/getaway-shootout/')">
+        <button class="fav-btn" onclick="toggleFavorite(event, 'getaway-shootout')">★</button>
         <img src="https://vexgame-unblocked.github.io/img/getaway-shootout.png" alt="GETAWAYSHOOTOUT">
         <span class="game-title">Getaway Shootout</span>
       </div>
 
-      <div class="game-card" data-name="slope" data-category="popular arcade" onclick="openGame('https://vexgame-unblocked.github.io/s/slope/')">
+      <div class="game-card" data-id="slope" data-name="slope" data-category="popular arcade" onclick="openGame('slope', 'https://vexgame-unblocked.github.io/s/slope/')">
+        <button class="fav-btn" onclick="toggleFavorite(event, 'slope')">★</button>
         <img src="https://vexgame-unblocked.github.io/img/slope.png" alt="SLOPE">
         <span class="game-title">Slope</span>
       </div>
       
-      <div class="game-card" data-name="slope 2" data-category="arcade" onclick="openGame('https://vexgame-unblocked.github.io/s6/slope-2/')">
+      <div class="game-card" data-id="slope-2" data-name="slope 2" data-category="arcade" onclick="openGame('slope-2', 'https://vexgame-unblocked.github.io/s6/slope-2/')">
+        <button class="fav-btn" onclick="toggleFavorite(event, 'slope-2')">★</button>
         <img src="https://vexgame-unblocked.github.io/img/slope-2.png" alt="SLOPE2">
         <span class="game-title">Slope 2</span>
       </div>
       
-      <div class="game-card" data-name="slope 3" data-category="popular arcade" onclick="openGame('https://vexgame-unblocked.github.io/s/slope-3/')">
+      <div class="game-card" data-id="slope-3" data-name="slope 3" data-category="popular arcade" onclick="openGame('slope-3', 'https://vexgame-unblocked.github.io/s/slope-3/')">
+        <button class="fav-btn" onclick="toggleFavorite(event, 'slope-3')">★</button>
         <img src="https://vexgame-unblocked.github.io/img/slope-3.png" alt="SLOPE3">
         <span class="game-title">Slope 3</span>
       </div>
       
-      <div class="game-card" data-name="tunnel rush" data-category="popular arcade" onclick="openGame('https://vexgame-unblocked.github.io/s/tunnel-rush/')">
+      <div class="game-card" data-id="tunnel-rush" data-name="tunnel rush" data-category="popular arcade" onclick="openGame('tunnel-rush', 'https://vexgame-unblocked.github.io/s/tunnel-rush/')">
+        <button class="fav-btn" onclick="toggleFavorite(event, 'tunnel-rush')">★</button>
         <img src="https://vexgame-unblocked.github.io/img/tunnel-rush.png" alt="TUNNELRUSH">
         <span class="game-title">Tunnel Rush</span>
       </div>
       
-      <div class="game-card" data-name="wordle unlimited" data-category="puzzle" onclick="openGame('https://vexgame-unblocked.github.io/s9/wordle-unlimited/')">
+      <div class="game-card" data-id="wordle" data-name="wordle unlimited" data-category="puzzle" onclick="openGame('wordle', 'https://vexgame-unblocked.github.io/s9/wordle-unlimited/')">
+        <button class="fav-btn" onclick="toggleFavorite(event, 'wordle')">★</button>
         <img src="https://vexgame-unblocked.github.io/img/wordle-unlimited.png" alt="WORDLE">
         <span class="game-title">Wordle Unlimited</span>
       </div>
 
-      <div class="game-card" data-name="basketball stars" data-category="popular sports" onclick="openGame('https://vexgame-unblocked.github.io/s/basketball-stars/')">
+      <div class="game-card" data-id="basketball-stars" data-name="basketball stars" data-category="popular sports" onclick="openGame('basketball-stars', 'https://vexgame-unblocked.github.io/s/basketball-stars/')">
+        <button class="fav-btn" onclick="toggleFavorite(event, 'basketball-stars')">★</button>
         <img src="https://vexgame-unblocked.github.io/img/basketball-stars.png" alt="BASKETBALLSTAR">
         <span class="game-title">Basketball Stars</span>
       </div>
       
-      <div class="game-card" data-name="a small world cup" data-category="sports" onclick="openGame('https://vexgame-unblocked.github.io/s2/a-small-world-cup/')">
+      <div class="game-card" data-id="small-world-cup" data-name="a small world cup" data-category="sports" onclick="openGame('small-world-cup', 'https://vexgame-unblocked.github.io/s2/a-small-world-cup/')">
+        <button class="fav-btn" onclick="toggleFavorite(event, 'small-world-cup')">★</button>
         <img src="https://vexgame-unblocked.github.io/img/a-small-world-cup.png" alt="SMALLWORLDCUP">
         <span class="game-title">A Small World Cup</span>
       </div>
 
-      <div class="game-card" data-name="stickman hook" data-category="action" onclick="openGame('https://vexgame-unblocked.github.io/s/stickman-hook/')">
+      <div class="game-card" data-id="stickman-hook" data-name="stickman hook" data-category="action" onclick="openGame('stickman-hook', 'https://vexgame-unblocked.github.io/s/stickman-hook/')">
+        <button class="fav-btn" onclick="toggleFavorite(event, 'stickman-hook')">★</button>
         <img src="https://vexgame-unblocked.github.io/img/stickman-hook.png" alt="STICKMANHOOK">
         <span class="game-title">Stickman Hook</span>
       </div>
 
-      <div class="game-card" data-name="master chess" data-category="puzzle" onclick="openGame('https://vexgame-unblocked.github.io/s7/master-chess/')">
+      <div class="game-card" data-id="master-chess" data-name="master chess" data-category="puzzle" onclick="openGame('master-chess', 'https://vexgame-unblocked.github.io/s7/master-chess/')">
+        <button class="fav-btn" onclick="toggleFavorite(event, 'master-chess')">★</button>
         <img src="https://vexgame-unblocked.github.io/img/master-chess.png" alt="MASTERCHESS">
         <span class="game-title">Master Chess</span>
       </div>
 
-      <div class="game-card" data-name="stack" data-category="arcade" onclick="openGame('https://vexgame-unblocked.github.io/s2/stack/')">
+      <div class="game-card" data-id="stack" data-name="stack" data-category="arcade" onclick="openGame('stack', 'https://vexgame-unblocked.github.io/s2/stack/')">
+        <button class="fav-btn" onclick="toggleFavorite(event, 'stack')">★</button>
         <img src="https://vexgame-unblocked.github.io/img/stack.png" alt="STACK">
         <span class="game-title">Stack</span>
       </div>
 
-      <div class="game-card" data-name="top speed 3d" data-category="action" onclick="openGame('https://vexgame-unblocked.github.io/s3/top-speed-3d/')">
+      <div class="game-card" data-id="top-speed-3d" data-name="top speed 3d" data-category="action" onclick="openGame('top-speed-3d', 'https://vexgame-unblocked.github.io/s3/top-speed-3d/')">
+        <button class="fav-btn" onclick="toggleFavorite(event, 'top-speed-3d')">★</button>
         <img src="https://vexgame-unblocked.github.io/img/top-speed-3d.png" alt="TOPSPEED">
         <span class="game-title">Top Speed 3D</span>
       </div>
 
-      <div class="game-card" data-name="escape road" data-category="popular action" onclick="openGame('https://escaperoadx.github.io/escaperoad/index.html')">
+      <div class="game-card" data-id="escape-road" data-name="escape road" data-category="popular action" onclick="openGame('escape-road', 'https://escaperoadx.github.io/escaperoad/index.html')">
+        <button class="fav-btn" onclick="toggleFavorite(event, 'escape-road')">★</button>
         <img src="https://escaperoadx.com/static/uploads/media/2025/8/a7ae14f55f924ab6b3602d6a8d98f358.png" alt="ESCAPEROAD">
         <span class="game-title">Escape Road</span>
       </div>
 
-      <div class="game-card" data-name="there is no game" data-category="puzzle" onclick="openGame('https://vexgame-unblocked.github.io/s/there-is-no-game/')">
+      <div class="game-card" data-id="there-is-no-game" data-name="there is no game" data-category="puzzle" onclick="openGame('there-is-no-game', 'https://vexgame-unblocked.github.io/s/there-is-no-game/')">
+        <button class="fav-btn" onclick="toggleFavorite(event, 'there-is-no-game')">★</button>
         <img src="https://vexgame-unblocked.github.io/img/there-is-no-game.png" alt="THEREISNOGAME">
         <span class="game-title">There Is No Game</span>
       </div>
 
-      <div class="game-card" data-name="soccer skills world cup" data-category="sports" onclick="openGame('https://vexgame-unblocked.github.io/s6/soccer-skills-world-cup/#topvaz/')">
+      <div class="game-card" data-id="soccer-skills" data-name="soccer skills world cup" data-category="sports" onclick="openGame('soccer-skills', 'https://vexgame-unblocked.github.io/s6/soccer-skills-world-cup/#topvaz/')">
+        <button class="fav-btn" onclick="toggleFavorite(event, 'soccer-skills')">★</button>
         <img src="https://vexgame-unblocked.github.io/img/soccer-skills-world-cup.png" alt="SOCCERSKILLWRLDCUP">
         <span class="game-title">Soccer Skills World Cup</span>
       </div>
 
-      <div class="game-card" data-name="jetpack joyride" data-category="arcade" onclick="openGame('https://vexgame-unblocked.github.io/s7/jetpack-joyride/')">
+      <div class="game-card" data-id="jetpack-joyride" data-name="jetpack joyride" data-category="arcade" onclick="openGame('jetpack-joyride', 'https://vexgame-unblocked.github.io/s7/jetpack-joyride/')">
+        <button class="fav-btn" onclick="toggleFavorite(event, 'jetpack-joyride')">★</button>
         <img src="https://vexgame-unblocked.github.io/img/jetpack-joyride.png" alt="JETPACKJOYRIDE">
         <span class="game-title">Jetpack Joyride</span>
       </div>
 
-      <div class="game-card" data-name="plactions" data-category="puzzle" onclick="openGame('https://vexgame-unblocked.github.io/s6/plactions/')">
+      <div class="game-card" data-id="plactions" data-name="plactions" data-category="puzzle" onclick="openGame('plactions', 'https://vexgame-unblocked.github.io/s6/plactions/')">
+        <button class="fav-btn" onclick="toggleFavorite(event, 'plactions')">★</button>
         <img src="https://vexgame-unblocked.github.io/img/plactions.png" alt="PLACTIONS">
         <span class="game-title">Plactions</span>
       </div>
@@ -482,10 +662,66 @@
     </div>
   </div>
 
+  <div id="settingsModal" class="modal">
+    <div class="settings-modal-content">
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <h3 style="font-size: 18px;">⚙️ Panic Settings</h3>
+        <button class="close-btn" onclick="closeSettingsModal()">&times;</button>
+      </div>
+
+      <div class="settings-field">
+        <label for="panicKeyInput">Panic Key (Single key):</label>
+        <input type="text" id="panicKeyInput" maxlength="1" placeholder="` or ~">
+      </div>
+
+      <div class="settings-field">
+        <label for="panicUrlInput">Panic Redirect URL:</label>
+        <input type="url" id="panicUrlInput" placeholder="https://classroom.google.com">
+      </div>
+
+      <button class="action-btn" style="padding: 10px; justify-content: center; margin-top: 8px;" onclick="saveSettings()">Save Settings</button>
+    </div>
+  </div>
+
   <script>
-    function openGame(url) {
+    /* --- Game Launcher & Recently Played --- */
+    let recentlyPlayed = JSON.parse(localStorage.getItem('siteRecentlyPlayed')) || [];
+
+    function openGame(gameId, url) {
+      addRecentlyPlayed(gameId);
       document.getElementById('gameFrame').src = url;
       document.getElementById('gameModal').style.display = 'flex';
+    }
+
+    function addRecentlyPlayed(id) {
+      recentlyPlayed = recentlyPlayed.filter(gId => gId !== id);
+      recentlyPlayed.unshift(id);
+      if (recentlyPlayed.length > 4) {
+        recentlyPlayed.pop();
+      }
+      localStorage.setItem('siteRecentlyPlayed', JSON.stringify(recentlyPlayed));
+      updateRecentUI();
+    }
+
+    function updateRecentUI() {
+      const recentContainer = document.getElementById('recentContainer');
+      const recentGrid = document.getElementById('recentGrid');
+      recentGrid.innerHTML = '';
+
+      if (recentlyPlayed.length === 0) {
+        recentContainer.style.display = 'none';
+        return;
+      }
+
+      recentContainer.style.display = 'block';
+
+      recentlyPlayed.forEach(id => {
+        const originalCard = document.querySelector(`.game-card[data-id="${id}"]`);
+        if (originalCard) {
+          const cloneCard = originalCard.cloneNode(true);
+          recentGrid.appendChild(cloneCard);
+        }
+      });
     }
 
     function closeGame() {
@@ -518,6 +754,83 @@
       }
     }
 
+    /* --- Favorites Logic --- */
+    let favorites = JSON.parse(localStorage.getItem('siteFavorites')) || [];
+
+    function updateFavoriteUI() {
+      document.querySelectorAll('.game-card').forEach(card => {
+        const id = card.getAttribute('data-id');
+        const favBtn = card.querySelector('.fav-btn');
+        if (favorites.includes(id)) {
+          favBtn.classList.add('active');
+        } else {
+          favBtn.classList.remove('active');
+        }
+      });
+    }
+
+    function toggleFavorite(event, id) {
+      event.stopPropagation();
+      if (favorites.includes(id)) {
+        favorites = favorites.filter(favId => favId !== id);
+      } else {
+        favorites.push(id);
+      }
+      localStorage.setItem('siteFavorites', JSON.stringify(favorites));
+      updateFavoriteUI();
+      if (currentCategory === 'favorites') {
+        filterGames();
+      }
+    }
+
+    /* --- Random Game Feature --- */
+    function playRandomGame() {
+      const visibleCards = Array.from(document.querySelectorAll('#gameGrid .game-card:not(.hidden)'));
+      if (visibleCards.length > 0) {
+        const randomCard = visibleCards[Math.floor(Math.random() * visibleCards.length)];
+        randomCard.click();
+      } else {
+        alert("No games available to pick from!");
+      }
+    }
+
+    /* --- Panic Key & Settings Logic --- */
+    let panicKey = localStorage.getItem('sitePanicKey') || '`';
+    let panicUrl = localStorage.getItem('sitePanicUrl') || 'https://classroom.google.com';
+
+    window.addEventListener('keydown', (e) => {
+      if (e.key === panicKey || (panicKey === '`' && e.key === '~')) {
+        window.location.href = panicUrl;
+      }
+    });
+
+    function openSettingsModal() {
+      document.getElementById('panicKeyInput').value = panicKey;
+      document.getElementById('panicUrlInput').value = panicUrl;
+      document.getElementById('settingsModal').style.display = 'flex';
+    }
+
+    function closeSettingsModal() {
+      document.getElementById('settingsModal').style.display = 'none';
+    }
+
+    function saveSettings() {
+      const pKey = document.getElementById('panicKeyInput').value.trim();
+      const pUrl = document.getElementById('panicUrlInput').value.trim();
+
+      if (pKey) {
+        panicKey = pKey;
+        localStorage.setItem('sitePanicKey', panicKey);
+      }
+
+      if (pUrl) {
+        panicUrl = pUrl;
+        localStorage.setItem('sitePanicUrl', panicUrl);
+      }
+
+      closeSettingsModal();
+    }
+
     /* --- Search & Category Filtering Logic --- */
     let currentCategory = 'all';
 
@@ -530,15 +843,24 @@
 
     function filterGames() {
       const query = document.getElementById('searchInput').value.toLowerCase().trim();
-      const cards = document.querySelectorAll('.game-card');
+      const cards = document.querySelectorAll('#gameGrid .game-card');
       let visibleCount = 0;
 
       cards.forEach(card => {
         const name = card.getAttribute('data-name').toLowerCase();
+        const id = card.getAttribute('data-id');
         const categories = card.getAttribute('data-category').split(' ');
 
         const matchesQuery = name.includes(query);
-        const matchesCategory = currentCategory === 'all' || categories.includes(currentCategory);
+        let matchesCategory = false;
+
+        if (currentCategory === 'all') {
+          matchesCategory = true;
+        } else if (currentCategory === 'favorites') {
+          matchesCategory = favorites.includes(id);
+        } else {
+          matchesCategory = categories.includes(currentCategory);
+        }
 
         if (matchesQuery && matchesCategory) {
           card.classList.remove('hidden');
@@ -549,6 +871,7 @@
       });
 
       document.getElementById('noResults').style.display = visibleCount === 0 ? 'block' : 'none';
+      document.getElementById('gameCount').textContent = `Showing ${visibleCount} game${visibleCount === 1 ? '' : 's'}`;
     }
 
     /* --- Theme Selector Logic --- */
@@ -613,6 +936,11 @@
     const savedCloak = localStorage.getItem('siteCloak') || 'default';
     changeCloak(savedCloak);
     document.getElementById('cloakSelector').value = savedCloak;
+
+    // Initialize UI on load
+    updateFavoriteUI();
+    updateRecentUI();
+    filterGames();
   </script>
 
 </body>
