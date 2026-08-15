@@ -400,7 +400,7 @@
       opacity: 0.9;
     }
 
-    .settings-field input {
+    .settings-field input, .settings-field textarea {
       background-color: var(--input-bg);
       border: 1px solid rgba(255, 255, 255, 0.2);
       color: var(--text-color);
@@ -408,9 +408,10 @@
       border-radius: 8px;
       font-size: 14px;
       outline: none;
+      font-family: inherit;
     }
 
-    .settings-field input:focus {
+    .settings-field input:focus, .settings-field textarea:focus {
       border-color: var(--accent-color);
     }
 
@@ -424,15 +425,15 @@
       z-index: 1001;
     }
 
-    .fullscreen-btn, .close-btn {
+    .fps-toggle-btn, .fullscreen-btn, .close-btn {
       color: var(--text-color);
-      font-size: 22px;
+      font-size: 14px;
       font-weight: bold;
       cursor: pointer;
       background: rgba(0, 0, 0, 0.5);
       border: none;
       border-radius: 6px;
-      width: 36px;
+      padding: 0 8px;
       height: 36px;
       display: flex;
       align-items: center;
@@ -440,13 +441,35 @@
       transition: color 0.2s ease, background-color 0.2s ease;
     }
 
-    .fullscreen-btn:hover, .close-btn:hover {
+    .fps-toggle-btn:hover, .fullscreen-btn:hover, .close-btn:hover {
       color: var(--accent-color);
       background: rgba(0, 0, 0, 0.8);
     }
 
+    .fullscreen-btn, .close-btn {
+      width: 36px;
+      font-size: 22px;
+    }
+
     .close-btn {
       font-size: 28px;
+    }
+
+    /* FPS Performance Overlay */
+    .fps-overlay {
+      position: absolute;
+      top: 10px;
+      left: 15px;
+      background: rgba(0, 0, 0, 0.75);
+      color: #00ffcc;
+      font-family: monospace;
+      font-size: 13px;
+      padding: 6px 10px;
+      border-radius: 6px;
+      pointer-events: none;
+      z-index: 1001;
+      display: none;
+      border: 1px solid var(--accent-color);
     }
 
     iframe {
@@ -483,10 +506,11 @@
         <option value="midnight">Midnight</option>
       </select>
 
+      <button class="settings-icon-btn" onclick="openRequestModal()" title="Request a Game">➕ Request</button>
       <button class="settings-icon-btn" onclick="openSettingsModal()" title="Panic Key Settings">⚙️</button>
     </nav>
   </header>
-
+  
   <div class="content-container">
 
     <div id="recentContainer" class="recent-container">
@@ -658,16 +682,39 @@
     </div>
   </div>
 
+  <!-- Game Player Modal -->
   <div id="gameModal" class="modal">
     <div id="modalContent" class="modal-content">
+      <div id="fpsOverlay" class="fps-overlay">FPS: --</div>
       <div class="modal-controls">
+        <button class="fps-toggle-btn" onclick="toggleFPSOverlay()" title="Toggle FPS Overlay">📊 FPS</button>
         <button class="fullscreen-btn" onclick="toggleFullscreen()" title="Toggle Fullscreen">⛶</button>
         <button class="close-btn" onclick="closeGame()" title="Close Game">&times;</button>
       </div>
       <iframe id="gameFrame" src="" allowfullscreen></iframe>
     </div>
   </div>
+ 
+<!-- Game Request Modal -->
+<div id="requestModal" class="modal">
+  <div class="settings-modal-content">
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+      <h3 style="font-size: 18px;">📝 Request a Game</h3>
+      <button class="close-btn" onclick="closeRequestModal()">&times;</button>
+    </div>
+    <div class="settings-field">
+      <label for="requestTitle">Game Title:</label>
+      <input type="text" id="requestTitle" placeholder="e.g. Retro Bowl">
+    </div>
+    <div class="settings-field">
+      <label for="requestNotes">Notes / Game Link (optional):</label>
+      <textarea id="requestNotes" rows="3" placeholder="Provide extra info or links..."></textarea>
+    </div>
+    <button class="action-btn" style="padding: 10px; justify-content: center;" onclick="submitRequest()">Submit Request</button>
+  </div>
+</div>
 
+  <!-- Panic Settings Modal -->
   <div id="settingsModal" class="modal">
     <div class="settings-modal-content">
       <div style="display: flex; justify-content: space-between; align-items: center;">
@@ -695,6 +742,97 @@
       const titleElem = card.querySelector('.game-title');
       return titleElem ? titleElem.textContent.trim() : '';
     }
+
+    /* --- FPS Overlay Logic --- */
+    let fpsActive = false;
+    let fpsFrameCount = 0;
+    let fpsLastTime = performance.now();
+    let fpsAnimId = null;
+
+    function toggleFPSOverlay() {
+      fpsActive = !fpsActive;
+      const overlay = document.getElementById('fpsOverlay');
+      overlay.style.display = fpsActive ? 'block' : 'none';
+      if (fpsActive) {
+        fpsLastTime = performance.now();
+        fpsFrameCount = 0;
+        calcFPS();
+      } else if (fpsAnimId) {
+        cancelAnimationFrame(fpsAnimId);
+      }
+    }
+
+    function calcFPS() {
+      if (!fpsActive) return;
+      fpsFrameCount++;
+      const now = performance.now();
+      if (now - fpsLastTime >= 1000) {
+        document.getElementById('fpsOverlay').textContent = `FPS: ${fpsFrameCount}`;
+        fpsFrameCount = 0;
+        fpsLastTime = now;
+      }
+      fpsAnimId = requestAnimationFrame(calcFPS);
+    }
+
+/* --- Request Modal Logic --- */
+function openRequestModal() {
+  document.getElementById('requestModal').style.display = 'flex';
+}
+
+function closeRequestModal() {
+  document.getElementById('requestModal').style.display = 'none';
+}
+
+async function submitRequest() {
+  const title = document.getElementById('requestTitle').value.trim();
+  const notes = document.getElementById('requestNotes').value.trim();
+  const submitBtn = document.querySelector('#requestModal .action-btn');
+
+  // Basic Validation
+  if (!title) {
+    alert('Please enter a game title.');
+    return;
+  }
+
+  // Update button state while submitting
+  const originalText = submitBtn.textContent;
+  submitBtn.disabled = true;
+  submitBtn.textContent = 'Sending...';
+
+  try {
+    const response = await fetch('https://api.web3forms.com/submit', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      },
+      body: JSON.stringify({
+        access_key: '0647d3c7-5b02-438b-a422-707246fd3a68',
+        subject: `New Game Request: ${title}`,
+        from_name: 'Shnail-Unblocked',
+        game_title: title,
+        notes: notes || 'None'
+      })
+    });
+
+    const result = await response.json();
+
+    if (result.success) {
+      alert('Thank you! Your request has been sent.');
+      document.getElementById('requestTitle').value = '';
+      document.getElementById('requestNotes').value = '';
+      closeRequestModal();
+    } else {
+      alert('Failed to send request. Please try again.');
+    }
+  } catch (error) {
+    console.error('Request submission error:', error);
+    alert('An error occurred while sending your request.');
+  } finally {
+    submitBtn.disabled = false;
+    submitBtn.textContent = originalText;
+  }
+}
 
     /* --- Game Launcher & Recently Played --- */
     let recentlyPlayed = JSON.parse(localStorage.getItem('siteRecentlyPlayed')) || [];
@@ -743,6 +881,7 @@
       }
       document.getElementById('gameModal').style.display = 'none';
       document.getElementById('gameFrame').src = '';
+      if (fpsActive) toggleFPSOverlay();
     }
 
     /* --- Fullscreen Mode Toggle --- */
