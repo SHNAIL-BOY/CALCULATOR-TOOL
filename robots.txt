@@ -1,0 +1,5 @@
+User-agent: *
+Disallow: /games
+Disallow: /games.html
+Disallow: /about
+Disallow: /about.html
