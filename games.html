@@ -532,6 +532,7 @@
         <button class="tag-btn" onclick="setCategory('action', this)">Action</button>
         <button class="tag-btn" onclick="setCategory('sports', this)">Sports</button>
         <button class="tag-btn" onclick="setCategory('puzzle', this)">Puzzle</button>
+        <button class="tag-btn" onclick="setCategory('runner', this)">Runner</button>
 
         <span class="game-count" id="gameCount">Showing 0 games</span>
       </div>
@@ -577,25 +578,25 @@
         <span class="game-title">Getaway Shootout</span>
       </div>
 
-      <div class="game-card" data-category="popular arcade" onclick="openGame('Slope', 'https://vexgame-unblocked.github.io/s/slope/')">
+      <div class="game-card" data-category="popular arcade runner" onclick="openGame('Slope', 'https://vexgame-unblocked.github.io/s/slope/')">
         <button class="fav-btn" onclick="toggleFavorite(event, this)">★</button>
         <img src="https://vexgame-unblocked.github.io/img/slope.png" alt="SLOPE">
         <span class="game-title">Slope</span>
       </div>
       
-      <div class="game-card" data-category="arcade" onclick="openGame('Slope 2', 'https://vexgame-unblocked.github.io/s6/slope-2/')">
+      <div class="game-card" data-category="arcade runner" onclick="openGame('Slope 2', 'https://vexgame-unblocked.github.io/s6/slope-2/')">
         <button class="fav-btn" onclick="toggleFavorite(event, this)">★</button>
         <img src="https://vexgame-unblocked.github.io/img/slope-2.png" alt="SLOPE2">
         <span class="game-title">Slope 2</span>
       </div>
       
-      <div class="game-card" data-category="popular arcade" onclick="openGame('Slope 3', 'https://vexgame-unblocked.github.io/s/slope-3/')">
+      <div class="game-card" data-category="popular arcade runner" onclick="openGame('Slope 3', 'https://vexgame-unblocked.github.io/s/slope-3/')">
         <button class="fav-btn" onclick="toggleFavorite(event, this)">★</button>
         <img src="https://vexgame-unblocked.github.io/img/slope-3.png" alt="SLOPE3">
         <span class="game-title">Slope 3</span>
       </div>
       
-      <div class="game-card" data-category="popular arcade" onclick="openGame('Tunnel Rush', 'https://vexgame-unblocked.github.io/s/tunnel-rush/')">
+      <div class="game-card" data-category="runner arcade" onclick="openGame('Tunnel Rush', 'https://vexgame-unblocked.github.io/s/tunnel-rush/')">
         <button class="fav-btn" onclick="toggleFavorite(event, this)">★</button>
         <img src="https://vexgame-unblocked.github.io/img/tunnel-rush.png" alt="TUNNELRUSH">
         <span class="game-title">Tunnel Rush</span>
@@ -607,10 +608,16 @@
         <span class="game-title">Wordle Unlimited</span>
       </div>
 
-      <div class="game-card" data-category="popular sports" onclick="openGame('Basketball Stars', 'https://vexgame-unblocked.github.io/s/basketball-stars/')">
+      <div class="game-card" data-category="sports" onclick="openGame('Basketball Stars', 'https://vexgame-unblocked.github.io/s/basketball-stars/')">
         <button class="fav-btn" onclick="toggleFavorite(event, this)">★</button>
         <img src="https://vexgame-unblocked.github.io/img/basketball-stars.png" alt="BASKETBALLSTAR">
         <span class="game-title">Basketball Stars</span>
+      </div>
+
+      <div class="game-card" data-category="sports" onclick="openGame('Era Ball', 'https://eraball.com/')">
+        <button class="fav-btn" onclick="toggleFavorite(event, this)">★</button>
+        <img src="https://eraball.com/favicon.ico?favicon.1lbfjboby1t05.ico?dpl=dpl_2xMJjBrYEC8WYwySSJb1ihmGpLp1" alt="ERABALL">
+        <span class="game-title">Era Ball</span>
       </div>
       
       <div class="game-card" data-category="sports" onclick="openGame('A Small World Cup', 'https://vexgame-unblocked.github.io/s2/a-small-world-cup/')">
@@ -631,7 +638,7 @@
         <span class="game-title">Master Chess</span>
       </div>
 
-      <div class="game-card" data-category="arcade" onclick="openGame('Stack', 'https://vexgame-unblocked.github.io/s2/stack/')">
+      <div class="game-card" data-category="popular arcade" onclick="openGame('Stack', 'https://vexgame-unblocked.github.io/s2/stack/')">
         <button class="fav-btn" onclick="toggleFavorite(event, this)">★</button>
         <img src="https://vexgame-unblocked.github.io/img/stack.png" alt="STACK">
         <span class="game-title">Stack</span>
@@ -643,7 +650,7 @@
         <span class="game-title">Top Speed 3D</span>
       </div>
 
-      <div class="game-card" data-category="popular action" onclick="openGame('Escape Road', 'https://escaperoadx.github.io/escaperoad/index.html')">
+      <div class="game-card" data-category="popular action runner" onclick="openGame('Escape Road', 'https://escaperoadx.github.io/escaperoad/index.html')">
         <button class="fav-btn" onclick="toggleFavorite(event, this)">★</button>
         <img src="https://escaperoadx.com/static/uploads/media/2025/8/a7ae14f55f924ab6b3602d6a8d98f358.png" alt="ESCAPEROAD">
         <span class="game-title">Escape Road</span>
@@ -655,19 +662,31 @@
         <span class="game-title">There Is No Game</span>
       </div>
 
-      <div class="game-card" data-category="sports" onclick="openGame('Soccer Skills World Cup', 'https://vexgame-unblocked.github.io/s6/soccer-skills-world-cup/#topvaz/')">
+      <div class="game-card" data-category="popular sports" onclick="openGame('Soccer Skills World Cup', 'https://vexgame-unblocked.github.io/s6/soccer-skills-world-cup/#topvaz/')">
         <button class="fav-btn" onclick="toggleFavorite(event, this)">★</button>
         <img src="https://vexgame-unblocked.github.io/img/soccer-skills-world-cup.png" alt="SOCCERSKILLWRLDCUP">
         <span class="game-title">Soccer Skills World Cup</span>
       </div>
 
+      <div class="game-card" data-category="sports" onclick="openGame('Soccer Skills Euro Cup', 'https://vexgame-unblocked.github.io/s6/soccer-skills-euro-cup')">
+        <button class="fav-btn" onclick="toggleFavorite(event, this)">★</button>
+        <img src="https://vexgame-unblocked.github.io/img/soccer-skills-euro-cup.png" alt="SOCCERSKILLEUROCUP">
+        <span class="game-title">Soccer Skills Euro Cup</span>
+      </div>
+
+      <div class="game-card" data-category="sports" onclick="openGame('Soccer Skills Champions League', 'https://vexgame-unblocked.github.io/s6/soccer-skills-champions-league')">
+        <button class="fav-btn" onclick="toggleFavorite(event, this)">★</button>
+        <img src="https://vexgame-unblocked.github.io/img/soccer-skills-champions-league.png" alt="SOCCERSKILLCHAMPIONLEAGUE">
+        <span class="game-title">Soccer Skills Champions League</span>
+      </div>
+      
       <div class="game-card" data-category="sports" onclick="openGame('Penalty Shooters 2', 'https://vexgame-unblocked.github.io/s6/penalty-shooters-2/')">
         <button class="fav-btn" onclick="toggleFavorite(event, this)">★</button>
         <img src="https://vexgame-unblocked.github.io/img/penalty-shooters-2.png" alt="PENALTYSHOOTERS2">
         <span class="game-title">Penalty Shooters 2</span>
       </div>
 
-      <div class="game-card" data-category="arcade" onclick="openGame('Jetpack Joyride', 'https://vexgame-unblocked.github.io/s7/jetpack-joyride/')">
+      <div class="game-card" data-category="runner arcade" onclick="openGame('Jetpack Joyride', 'https://vexgame-unblocked.github.io/s7/jetpack-joyride/')">
         <button class="fav-btn" onclick="toggleFavorite(event, this)">★</button>
         <img src="https://vexgame-unblocked.github.io/img/jetpack-joyride.png" alt="JETPACKJOYRIDE">
         <span class="game-title">Jetpack Joyride</span>
@@ -677,6 +696,18 @@
         <button class="fav-btn" onclick="toggleFavorite(event, this)">★</button>
         <img src="https://vexgame-unblocked.github.io/img/plactions.png" alt="PLACTIONS">
         <span class="game-title">Plactions</span>
+      </div>
+      
+      <div class="game-card" data-category="puzzle" onclick="openGame('Jumping Shell', 'https://vexgame-unblocked.github.io/s5/jumping-shell')">
+        <button class="fav-btn" onclick="toggleFavorite(event, this)">★</button>
+        <img src="https://vexgame-unblocked.github.io/img/jumping-shell.png" alt="JUMPINGSHELL">
+        <span class="game-title">Jumping Shell</span>
+      </div>
+      
+      <div class="game-card" data-category="runner" onclick="openGame('Chrome Dino', 'https://vexgame-unblocked.github.io/s7/dinosaur-game')">
+        <button class="fav-btn" onclick="toggleFavorite(event, this)">★</button>
+        <img src="https://vexgame-unblocked.github.io/img/dinosaur-game.png" alt="CHROMEDINO">
+        <span class="game-title">Chrome Dino</span>
       </div>
       
     </div>
