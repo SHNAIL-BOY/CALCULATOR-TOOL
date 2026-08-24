@@ -533,7 +533,9 @@
         <button class="tag-btn" onclick="setCategory('sports', this)">Sports</button>
         <button class="tag-btn" onclick="setCategory('puzzle', this)">Puzzle</button>
         <button class="tag-btn" onclick="setCategory('runner', this)">Runner</button>
+        <button class="tag-btn" onclick="setCategory('platformer', this)">Platformer</button>
         <button class="tag-btn" onclick="setCategory('moto', this)">Moto</button>
+        <button class="tag-btn" onclick="setCategory('simulation', this)">Simulation</button>
 
         <span class="game-count" id="gameCount">Showing 0 games</span>
       </div>
@@ -542,6 +544,12 @@
     <div id="noResults" class="no-results">No games found matching your search.</div>
 
     <div class="game-grid" id="gameGrid">
+
+      <div class="game-card" data-category="platformer arcade" onclick="openGame('SHNAIL-PLATFORMER', 'https://shnail-boy.github.io/CALCULATOR-TOOL/shnail-plat/SHNAIL-PLATFORMER.html')">
+        <button class="fav-btn" onclick="toggleFavorite(event, this)">★</button>
+        <img src="https://shnail-boy.github.io/CALCULATOR-TOOL/shnail-plat/SHNAIL-PLATFORMER.png" alt="SHNAIL-PLATFORMER">
+        <span class="game-title">SHNAIL-PLATFORMER</span>
+      </div>
 
       <div class="game-card" data-category="puzzle" onclick="openGame('2048', 'https://daocloud.github.io/dao-2048/')">
         <button class="fav-btn" onclick="toggleFavorite(event, this)">★</button>
@@ -555,7 +563,7 @@
         <span class="game-title">ADOFAI</span>
       </div>
       
-      <div class="game-card" data-category="popular arcade" onclick="openGame('TAG', 'https://vexgame-unblocked.github.io/s3/tag/')">
+      <div class="game-card" data-category="popular arcade platformer" onclick="openGame('TAG', 'https://vexgame-unblocked.github.io/s3/tag/')">
         <button class="fav-btn" onclick="toggleFavorite(event, this)">★</button>
         <img src="https://vexgame-unblocked.github.io/img/tag.png" alt="TAG">
         <span class="game-title">TAG</span>
@@ -573,7 +581,7 @@
         <span class="game-title">Rooftop Snipers</span>
       </div>
 
-      <div class="game-card" data-category="action" onclick="openGame('Getaway Shootout', 'https://vexgame-unblocked.github.io/s4/getaway-shootout/')">
+      <div class="game-card" data-category="action platformer" onclick="openGame('Getaway Shootout', 'https://vexgame-unblocked.github.io/s4/getaway-shootout/')">
         <button class="fav-btn" onclick="toggleFavorite(event, this)">★</button>
         <img src="https://vexgame-unblocked.github.io/img/getaway-shootout.png" alt="GETAWAYSHOOTOUT">
         <span class="game-title">Getaway Shootout</span>
@@ -693,13 +701,13 @@
         <span class="game-title">Jetpack Joyride</span>
       </div>
 
-      <div class="game-card" data-category="puzzle" onclick="openGame('Plactions', 'https://vexgame-unblocked.github.io/s6/plactions/')">
+      <div class="game-card" data-category="puzzle platformer" onclick="openGame('Plactions', 'https://vexgame-unblocked.github.io/s6/plactions/')">
         <button class="fav-btn" onclick="toggleFavorite(event, this)">★</button>
         <img src="https://vexgame-unblocked.github.io/img/plactions.png" alt="PLACTIONS">
         <span class="game-title">Plactions</span>
       </div>
       
-      <div class="game-card" data-category="puzzle" onclick="openGame('Jumping Shell', 'https://vexgame-unblocked.github.io/s5/jumping-shell')">
+      <div class="game-card" data-category="puzzle platformer" onclick="openGame('Jumping Shell', 'https://vexgame-unblocked.github.io/s5/jumping-shell')">
         <button class="fav-btn" onclick="toggleFavorite(event, this)">★</button>
         <img src="https://vexgame-unblocked.github.io/img/jumping-shell.png" alt="JUMPINGSHELL">
         <span class="game-title">Jumping Shell</span>
@@ -728,6 +736,12 @@
         <img src="https://vexgame-unblocked.github.io/img/moto-x3m-pool-party.png" alt="MOTOX3MPOOLPARTY">
         <span class="game-title">Moto X3m Pool Party</span>
       </div>
+
+      <div class="game-card" data-category="simulation" onclick="openGame('Bitlife', 'https://vexgame-unblocked.github.io/s/bitlife')">
+        <button class="fav-btn" onclick="toggleFavorite(event, this)">★</button>
+        <img src="https://vexgame-unblocked.github.io/img/bitlife.png" alt="BITLIFE">
+        <span class="game-title">Bitlife</span>
+      </div>
       
     </div>
   </div>
@@ -754,7 +768,7 @@
     </div>
     <div class="settings-field">
       <label for="requestTitle">Game Title:</label>
-      <input type="text" id="requestTitle" placeholder="e.g. Retro Bowl">
+      <input type="text" id="requestTitle" placeholder="e.g. Shnail-Platformer">
     </div>
     <div class="settings-field">
       <label for="requestNotes">Notes / Game Link (optional):</label>
