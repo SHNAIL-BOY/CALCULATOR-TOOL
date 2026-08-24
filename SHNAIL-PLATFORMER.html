@@ -1,0 +1,1501 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Shnail-platformer</title>
+  <link rel="icon" type="image/png" href="favicon.png">
+  <meta name="description" content="Shnail Platformer, a free endless browser platformer with enemies & regular updates. No download required.">
+  <style>
+    body { margin:0; overflow:hidden; background:#222; }
+    canvas { display:block; margin:auto; background:#87CEEB; image-rendering:pixelated; transition: background 1s ease; }
+
+    #controlsBox{
+      position:absolute;
+      top:50%; left:50%;
+      transform:translate(-50%,-50%);
+      background:#111;
+      color:white;
+      padding:20px;
+      border:2px solid white;
+      display:none;
+      font-family:monospace;
+      z-index: 1000;
+    }
+
+    #mainMenu {
+      position:absolute;
+      top:50%; left:50%;
+      transform:translate(-50%,-50%);
+      background:#111;
+      color:white;
+      padding:30px;
+      font-family:monospace;
+      text-align:center;
+      z-index: 900;
+    }
+
+    #mainMenu h1 {
+      color:green;
+      margin-bottom:20px;
+    }
+
+    #startButton, #easyModeButton, #twoPlayerButton {
+      background:green;
+      color:white;
+      border:none;
+      padding:10px 25px;
+      font-size:16px;
+      cursor:pointer;
+      font-family:monospace;
+      margin: 5px;
+    }
+
+    #easyModeButton.active, #twoPlayerButton.active {
+      background: #2ed84b;
+      box-shadow: 0 0 10px #2ed84b;
+    }
+
+    #hud{
+      position:absolute;
+      bottom:10px;
+      left:10px;
+      color:white;
+      font-family:monospace;
+      background:rgba(0,0,0,0.35);
+      padding:6px 8px;
+      border:1px solid rgba(255,255,255,0.15);
+      width:140px;
+    }
+
+    #powerupHud{
+      position:absolute;
+      top:10px;
+      right:10px;
+      color:white;
+      font-family:monospace;
+      background:rgba(0,0,0,0.5);
+      padding:8px 12px;
+      border:1px solid rgba(255,255,255,0.2);
+      text-align:right;
+    }
+
+    .hudRow{ margin-bottom:5px; font-size:10px; }
+    .bar{ width:100%; height:6px; background:#333; margin-top:2px; }
+    #ammoBar{ height:100%; width:100%; background:orange; }
+  </style>
+</head>
+<body>
+
+<div id="mainMenu">
+  <h1>SHNAIL PLATFORMER</h1>
+  <button id="startButton" onclick="startGame()">START GAME</button><br>
+  <button id="easyModeButton" onclick="toggleEasyMode()">EASY MODE: OFF</button>
+  <button id="twoPlayerButton" onclick="toggleTwoPlayerMode()">2-PLAYER: OFF</button>
+</div>
+
+<canvas id="game" width="800" height="400"></canvas>
+
+<div id="hud">
+  <div class="hudRow">
+    🔫 Ammo
+    <div class="bar"><div id="ammoBar"></div></div>
+  </div>
+  <div class="hudRow">⭐ Score: <span id="scoreText">0</span></div>
+  <div class="hudRow">🏆 High: <span id="highScoreText">0</span></div>
+  <div class="hudRow">🌍 Biome: <span id="biomeText">Grassland</span></div>
+</div>
+
+<div id="powerupHud">
+  <div id="shieldHud" style="display:none; color:#00ffff;">🛡️ Shield: <span id="shieldHitsText">0</span></div>
+  <div id="freezeHud" style="display:none; color:#a64dff;">❄️ Freeze: <span id="freezeTimeText">0</span>s</div>
+  <div id="droneHud" style="display:none; color:#00ff88;">🤖 Drone: <span id="droneTimeText">0</span>s</div>
+  <div id="ghostHud" style="display:none; color:#e0e0e0;">👻 Ghost: <span id="ghostTimeText">0</span>s</div>
+</div>
+
+<div id="controlsBox">
+<b>CONTROLS</b><br><br>
+<b>P1:</b> Move: WASD | Jump: W/Space | Dash: Left Shift | Shoot: F<br>
+<b>P2:</b> Move: Arrows | Jump: Up | Dash: Right Shift | Shoot: Numpad 0 / Enter<br><br>
+Restart: R | Pause: ESC | Toggle Menu: I<br>
+#shnails4life
+</div>
+
+<script>
+let paused = false;
+let easyMode = false;
+let twoPlayerMode = false;
+
+const canvas = document.getElementById("game");
+const ctx = canvas.getContext("2d");
+const box = document.getElementById("controlsBox");
+const menu = document.getElementById("mainMenu");
+
+// Biome Configurations
+const BIOMES = [
+  { name: "Grassland", sky: "#87CEEB", platform: "#3a5", slippery: false, isCloud: false },
+  { name: "Ice Cave", sky: "#1a2a3a", platform: "#aeeeff", slippery: true, isCloud: false },
+  { name: "Lava Core", sky: "#2a0800", platform: "#a32", slippery: false, isCloud: false },
+  { name: "Desert Ruins", sky: "#e6c280", platform: "#b58742", slippery: false, isCloud: false },
+  { name: "Sky Kingdom", sky: "#50B4FF", platform: "rgba(255, 255, 255, 0.85)", slippery: false, isCloud: true }
+];
+
+let currentBiome = BIOMES[0];
+let platformsGeneratedCount = 0;
+let platformsUntilBiomeChange = Math.floor(Math.random() * 51) + 50; // 50-100 platforms
+let fireTurretCounter = 0;
+let platformsUntilFireTurret = Math.floor(Math.random() * 6) + 5; // 5-10 platforms
+let nextBiomeTargetX = 0;
+
+let lastTime = performance.now();
+let dt = 1;
+
+function toggleEasyMode(){
+  easyMode = !easyMode;
+  const btn = document.getElementById("easyModeButton");
+  if(easyMode){
+    btn.innerText = "EASY MODE: ON";
+    btn.classList.add("active");
+  } else {
+    btn.innerText = "EASY MODE: OFF";
+    btn.classList.remove("active");
+  }
+}
+
+function toggleTwoPlayerMode(){
+  twoPlayerMode = !twoPlayerMode;
+  const btn = document.getElementById("twoPlayerButton");
+  if(twoPlayerMode){
+    btn.innerText = "2-PLAYER: ON";
+    btn.classList.add("active");
+  } else {
+    btn.innerText = "2-PLAYER: OFF";
+    btn.classList.remove("active");
+  }
+}
+
+function startGame(){
+  audioCtx.resume();
+  menu.style.display="none";
+  resetWorld();
+  lastTime = performance.now();
+  update(lastTime);
+}
+
+const gravity = 0.5;
+
+// SFX
+const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+function beep(freq, duration, type="square", volume=0.08){
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.type = type;
+    osc.frequency.value = freq;
+    gain.gain.value = volume;
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    osc.start();
+    gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + duration);
+    osc.stop(audioCtx.currentTime + duration);
+}
+
+function sfxJump(){ beep(520,0.08,"square"); setTimeout(()=>beep(720,0.05,"square"),25); }
+function sfxShoot(){ beep(220,0.04,"sawtooth"); setTimeout(()=>beep(170,0.04,"sawtooth"),20); }
+function sfxCoin(){ beep(900,0.05,"triangle"); setTimeout(()=>beep(1200,0.08,"triangle"),40); }
+function sfxPowerup(){
+    beep(400,0.05,"sine");
+    setTimeout(()=>beep(600,0.05,"sine"),30);
+    setTimeout(()=>beep(800,0.05,"sine"),60);
+    setTimeout(()=>beep(1000,0.08,"sine"),90);
+}
+function sfxEnemy(){ beep(180,0.10,"square"); setTimeout(()=>beep(90,0.12,"square"),50); }
+function sfxDash(){ beep(300,0.03,"sawtooth"); setTimeout(()=>beep(500,0.03,"sawtooth"),20); setTimeout(()=>beep(800,0.03,"sawtooth"),40); }
+function sfxDeath(){ beep(400,0.10,"square"); setTimeout(()=>beep(250,0.12,"square"),60); setTimeout(()=>beep(120,0.18,"square"),120); }
+function sfxTurret(){ beep(120,0.04,"triangle"); setTimeout(()=>beep(120,0.04,"triangle"),50); setTimeout(()=>beep(120,0.04,"triangle"),100); }
+
+let cameraX = 0;
+let shake = 0;
+let shakeX = 0;
+
+let flash = 0;
+let particles = [];
+let snowflakes = [];
+
+for(let i=0; i<60; i++){
+  snowflakes.push({
+    x: Math.random() * canvas.width,
+    y: Math.random() * canvas.height,
+    r: Math.random() * 2 + 1,
+    speed: Math.random() * 1 + 0.5
+  });
+}
+
+let worldX = 0;
+let score = 0;
+
+let highScore = Number(localStorage.getItem("shnailHighScore") || 0);
+
+function addScore(amount){
+  score += amount;
+  if(score > highScore){
+    highScore = score;
+    localStorage.setItem("shnailHighScore", highScore);
+  }
+}
+
+let debugMode = false;
+let debugInvincible = false;
+let debugInfiniteAmmo = false;
+let debugHitboxes = false;
+let noclip = false;
+
+let debugPopup = 0;
+
+let fps = 0;
+let frameCount = 0;
+let lastFPSUpdate = performance.now();
+
+let coyoteTime = 0;
+let jumpBuffer = 0;
+
+let coyoteTime2 = 0;
+let jumpBuffer2 = 0;
+
+let timeFreezeTimer = 0;
+let droneTimer = 0;
+let droneAngle = 0;
+let droneShootTimer = 0;
+let ghostTimer = 0;
+
+let player = {
+  x:100,y:200,w:30,h:30,
+  dx:0,dy:0,
+  baseSpeed:3,speed:3,jump:10,
+  grounded:false,jumps:0,
+  canWallJump:false,
+  facing:1,dash:0,
+  spawnX:100,spawnY:200,
+  ammo:10,maxAmmo:20,
+  speedBoostTimer:0,
+  shieldHits:0,
+  tripleShot:false
+};
+
+let player2 = {
+  x:140,y:200,w:30,h:30,
+  dx:0,dy:0,
+  baseSpeed:3,speed:3,jump:10,
+  grounded:false,jumps:0,
+  canWallJump:false,
+  facing:1,dash:0,
+  spawnX:140,spawnY:200,
+  ammo:10,maxAmmo:20,
+  speedBoostTimer:0,
+  shieldHits:0,
+  tripleShot:false
+};
+
+let platforms,enemies,coins,bullets,checkpoints,ammoCrates,mushrooms,powerups;
+let enemyBullets = [];
+
+function resetWorld(){
+  currentBiome = BIOMES[0];
+  platformsGeneratedCount = 0;
+  platformsUntilBiomeChange = Math.floor(Math.random() * 51) + 50;
+  fireTurretCounter = 0;
+  platformsUntilFireTurret = Math.floor(Math.random() * 6) + 5;
+  nextBiomeTargetX = 1000 + (platformsUntilBiomeChange * 130);
+
+  platforms=[{x:0,y:350,w:1000,h:50, color: currentBiome.platform, isCloud: false}];
+  enemies=[]; coins=[]; bullets=[]; checkpoints=[]; ammoCrates=[]; enemyBullets=[]; mushrooms=[]; powerups=[];
+  worldX=0; score=0;
+
+  player.x=100; player.y=200;
+  player.spawnX=100; player.spawnY=200;
+  player.dx=0; player.dy=0;
+  player.ammo=10;
+  player.speed = player.baseSpeed;
+  player.speedBoostTimer = 0;
+  player.shieldHits = 0;
+  player.tripleShot = false;
+
+  player2.x=140; player2.y=200;
+  player2.spawnX=140; player2.spawnY=200;
+  player2.dx=0; player2.dy=0;
+  player2.ammo=10;
+  player2.speed = player2.baseSpeed;
+  player2.speedBoostTimer = 0;
+  player2.shieldHits = 0;
+  player2.tripleShot = false;
+
+  timeFreezeTimer = 0;
+  droneTimer = 0;
+  ghostTimer = 0;
+
+  coyoteTime=0; jumpBuffer=0;
+  coyoteTime2=0; jumpBuffer2=0;
+}
+
+resetWorld();
+
+let keys={};
+
+function fireBullets(p = player){
+  if(p.tripleShot){
+    bullets.push({x:p.x+15, y:p.y+15, dx:p.facing*6, dy:-1.5});
+    bullets.push({x:p.x+15, y:p.y+15, dx:p.facing*6, dy:0});
+    bullets.push({x:p.x+15, y:p.y+15, dx:p.facing*6, dy:1.5});
+  } else {
+    bullets.push({x:p.x+15, y:p.y+15, dx:p.facing*6, dy:0});
+  }
+  if(!debugInfiniteAmmo) p.ammo--;
+  sfxShoot();
+}
+
+document.addEventListener("keydown",e=>{
+  keys[e.code]=true;
+  if(e.code === "Escape"){
+    paused = !paused;
+  }
+  if(e.code==="KeyR") resetWorld();
+  if(e.code==="KeyI")
+    box.style.display = box.style.display==="none"?"block":"none";
+
+  // Player 1 Shoot
+  if(e.code==="KeyF" && (player.ammo>0 || debugInfiniteAmmo)){
+      fireBullets(player);
+  }
+
+  // Player 1 Jump
+  if(e.code==="Space" || e.code==="KeyW"){
+    jumpBuffer = 6;
+  }
+
+  // Single player Mode Jump with Arrow Up
+  if(!twoPlayerMode && e.code==="ArrowUp"){
+    jumpBuffer = 6;
+  }
+
+  // Player 2 Controls (Only in 2-Player Mode)
+  if(twoPlayerMode){
+    if((e.code==="Numpad0" || e.code==="Enter") && (player2.ammo>0 || debugInfiniteAmmo)){
+      fireBullets(player2);
+    }
+    if(e.code==="ArrowUp"){
+      jumpBuffer2 = 6;
+    }
+    if(e.code==="ShiftRight" && player2.dash<=0){
+      player2.dx=player2.facing*30;
+      sfxDash();
+      player2.dash=60;
+    }
+  }
+
+  if(debugMode){
+      if(e.code==="Digit1") debugInvincible = !debugInvincible;
+      if(e.code==="Digit2") debugInfiniteAmmo = !debugInfiniteAmmo;
+      if(e.code==="Digit3") debugHitboxes = !debugHitboxes;
+      if(e.code==="Digit4") noclip = !noclip;
+  }
+});
+  
+document.addEventListener("keydown",e=>{
+    if(e.ctrlKey && e.altKey && e.code==="KeyS"){
+        e.preventDefault();
+        debugMode = !debugMode;
+        debugPopup = 180;
+    }
+});
+
+document.addEventListener("keyup",e=>keys[e.code]=false);
+
+/* GAMEPAD */
+let prevButtons = [];
+function handleGamepad(){
+  const gp = navigator.getGamepads()[0];
+  if(!gp) return;
+  const DEADZONE = 0.25;
+
+  let move = gp.axes[0];
+  if(Math.abs(move) > DEADZONE){
+    let scaled = (Math.abs(move) - DEADZONE) / (1 - DEADZONE);
+    scaled *= Math.sign(move);
+    player.dx = scaled * player.speed;
+    player.facing = move > 0 ? 1 : -1;
+  }
+
+  function pressed(btn){ return gp.buttons[btn]?.pressed && !prevButtons[btn]; }
+  function held(btn){ return gp.buttons[btn]?.pressed; }
+
+  if(pressed(3)) jumpBuffer = 6;
+  if(pressed(2) && player.dash <= 0){
+    player.dx = player.facing * 30;
+    player.dash = 60;
+  }
+
+  if(held(7) && player.ammo > 0){
+    if(!player.shootCooldown) player.shootCooldown = 0;
+    if(player.shootCooldown <= 0){
+      fireBullets(player);
+      player.shootCooldown = 10;
+    }
+  }
+
+  if(pressed(9)) resetWorld();
+  if(player.shootCooldown > 0) player.shootCooldown -= dt;
+  prevButtons = gp.buttons.map(b => b.pressed);
+}
+
+/* HUD */
+function updateHUD(){
+  let ammoPercent = (player.ammo / player.maxAmmo) * 100;
+  document.getElementById("ammoBar").style.width = ammoPercent + "%";
+  document.getElementById("scoreText").innerText = score;
+  document.getElementById("highScoreText").innerText = highScore;
+  document.getElementById("biomeText").innerText = currentBiome.name;
+
+  const shieldHud = document.getElementById("shieldHud");
+  if(player.shieldHits > 0 || (twoPlayerMode && player2.shieldHits > 0)){
+    shieldHud.style.display = "block";
+    document.getElementById("shieldHitsText").innerText = Math.max(player.shieldHits, player2.shieldHits);
+  } else { shieldHud.style.display = "none"; }
+
+  const freezeHud = document.getElementById("freezeHud");
+  if(timeFreezeTimer > 0){
+    freezeHud.style.display = "block";
+    document.getElementById("freezeTimeText").innerText = Math.ceil(timeFreezeTimer / 60);
+  } else { freezeHud.style.display = "none"; }
+
+  const droneHud = document.getElementById("droneHud");
+  if(droneTimer > 0){
+    droneHud.style.display = "block";
+    document.getElementById("droneTimeText").innerText = Math.ceil(droneTimer / 60);
+  } else { droneHud.style.display = "none"; }
+
+  const ghostHud = document.getElementById("ghostHud");
+  if(ghostTimer > 0){
+    ghostHud.style.display = "block";
+    document.getElementById("ghostTimeText").innerText = Math.ceil(ghostTimer / 60);
+  } else { ghostHud.style.display = "none"; }
+}
+
+/* PARTICLES */
+function spawnParticles(x,y,color,count=8){
+  for(let i=0;i<count;i++){
+    particles.push({
+      x,y,
+      dx:(Math.random()-0.5)*4,
+      dy:(Math.random()-0.5)*4,
+      life:30,
+      color
+    });
+  }
+}
+
+function updateParticles(){
+  particles.forEach(p=>{
+    p.x += p.dx * dt;
+    p.y += p.dy * dt;
+    p.dy += 0.2 * dt;
+    p.life -= dt;
+  });
+  particles = particles.filter(p=>p.life>0);
+
+  if(currentBiome.name === "Ice Cave"){
+    snowflakes.forEach(s => {
+      s.y += s.speed * dt;
+      s.x += Math.sin(s.y * 0.02) * 0.5 * dt;
+      if(s.y > canvas.height) s.y = 0;
+    });
+  }
+}
+
+/* SHAKE */
+function addShake(amount){ shake = Math.max(shake, amount); }
+function applyShake(){
+  if(shake > 0){
+    shakeX = (Math.random()-0.5) * shake;
+    shake *= Math.pow(0.85, dt);
+  } else { shake = 0; shakeX = 0; }
+}
+
+function triggerNuke(){
+  addShake(20);
+  flash = 15;
+  sfxEnemy();
+  enemies.forEach(e => {
+    spawnParticles(e.x + e.w/2, e.y + e.h/2, "orange", 12);
+    addScore(e.type.includes("turret")?30:20);
+  });
+  enemies = [];
+  enemyBullets = [];
+}
+
+/* WORLD GENERATION */
+function generateChunk(){
+  let startX = worldX + 800;
+
+  for(let i=0;i<6;i++){
+    let x = startX + i*130;
+    let y = 180 + Math.random()*170;
+
+    platformsGeneratedCount++;
+    fireTurretCounter++;
+
+    // Randomly shift biomes after 50-100 platforms
+    if(platformsGeneratedCount >= platformsUntilBiomeChange){
+      platformsGeneratedCount = 0;
+      platformsUntilBiomeChange = Math.floor(Math.random() * 51) + 50;
+      
+      let nextBiomes = BIOMES.filter(b => b.name !== currentBiome.name);
+      currentBiome = nextBiomes[Math.floor(Math.random() * nextBiomes.length)];
+    }
+
+    let isCloudPlat = currentBiome.isCloud;
+    let platWidth = 100;
+    let platHeight = 20;
+
+    platforms.push({
+      x, y,
+      w: platWidth,
+      h: platHeight,
+      color: currentBiome.platform,
+      isCloud: isCloudPlat
+    });
+
+    nextBiomeTargetX = x;
+
+    // Fire Turrets guaranteed to spawn every 5 to 10 platforms ONLY in Lava Core and NOT in Easy Mode
+    let spawnedFireTurret = false;
+    if(!easyMode && currentBiome.name === "Lava Core" && fireTurretCounter >= platformsUntilFireTurret){
+      enemies.push({ x, y:y-20, w:20, h:20, dx:0, dy:0, type:"fire_turret", hp:4, shootTimer:80 });
+      fireTurretCounter = 0;
+      platformsUntilFireTurret = Math.floor(Math.random() * 6) + 5;
+      spawnedFireTurret = true;
+    }
+
+    if(!spawnedFireTurret && Math.random()<0.95){
+      let r = Math.random();
+
+      // Biome-specific enemies are blocked when easyMode is active
+      if(!easyMode && currentBiome.name === "Desert Ruins" && r < 0.35){
+        enemies.push({ x,y:y-24,w:22,h:24, dx:(Math.random()<0.5?-1:1)*0.4, dy:0, type:"mummy", hp:5 });
+      } else if(!easyMode && currentBiome.name === "Ice Cave" && r < 0.35){
+        enemies.push({ x, y: y - 50, w: 24, h: 18, dx: 0, dy: 0, type: "flying_shnail", hp: 2, hoverBaseY: y - 50, hoverAngle: Math.random() * Math.PI * 2, speed: 1.2 });
+      } else if(r < 0.15 && !easyMode){
+        enemies.push({ x,y:y-20,w:20,h:20, dx:0,dy:0, type:"turret", hp:3, shootTimer:60 });
+      } else if(r < 0.35){
+        enemies.push({ x,y:y-18,w:24,h:18, dx:(Math.random()<0.5?-1:1)*0.6, dy:0, type:"shnail", hp:2 });
+      } else if(r < 0.50 && !easyMode){
+        enemies.push({ x, y: y - 50, w: 24, h: 18, dx: 0, dy: 0, type: "flying_shnail", hp: 2, hoverBaseY: y - 50, hoverAngle: Math.random() * Math.PI * 2, speed: 1.2 });
+      } else if(r < 0.70){
+        enemies.push({ x,y:y-20,w:20,h:20, dx:(Math.random()<0.5?-1:1)*1.2, dy:0, type:"normal" });
+      } else if(r < 0.85){
+        enemies.push({ x, y:y-20, w:24, h:18, dx:0, dy:0, type:"runner", hp:1, dashCooldown:80, dashing:false });
+      } else if(!easyMode) {
+        enemies.push({ x,y:y-22,w:22,h:22, dx:0,dy:0, type:"jumper", hp:2, jumpTimer:60 });
+      }
+    }
+
+    if(Math.random()<0.6) coins.push({x:x+30,y:y-20,taken:false});
+    if(Math.random()<0.25) checkpoints.push({x,y:y-30});
+    if(Math.random()<0.15) ammoCrates.push({x:x+50,y:y-20,taken:false});
+    if(Math.random()<0.10) mushrooms.push({x:x+70,y:y-16,taken:false});
+
+    if(Math.random()<0.20){
+      let pr = Math.random();
+      let pType = "shield";
+      if(pr < 0.20) pType = "shield";
+      else if(pr < 0.40) pType = "triple";
+      else if(pr < 0.60) pType = "freeze";
+      else if(pr < 0.75) pType = "drone";
+      else if(pr < 0.90) pType = "ghost";
+      else pType = "nuke"; 
+
+      powerups.push({x:x+40, y:y-18, type:pType, taken:false});
+    }
+  }
+
+  worldX+=800;
+}
+
+function rect(a,b){
+  return a.x<b.x+b.w && a.x+a.w>b.x &&
+         a.y<b.y+b.h && a.y+a.h>b.y;
+}
+
+function update(timestamp){
+  if(paused){
+    drawPauseScreen();
+    lastTime = timestamp;
+    return requestAnimationFrame(update);
+  }
+  
+  let elapsed = timestamp - lastTime;
+  lastTime = timestamp;
+  dt = elapsed / 16.6667;
+  if (dt > 3) dt = 3;
+
+  canvas.style.background = currentBiome.sky;
+
+  handleGamepad();
+
+  let maxPlayerX = twoPlayerMode ? Math.max(player.x, player2.x) : player.x;
+  if(maxPlayerX > worldX-400) generateChunk();
+
+  // Ice Biome Slippery Controls Physics
+  let accel = currentBiome.slippery ? 0.3 : 1;
+  let friction = currentBiome.slippery ? Math.pow(0.96, dt) : Math.pow(0.8, dt);
+
+  // Player 1 Movement
+  if(keys["KeyD"] || (!twoPlayerMode && keys["ArrowRight"])){
+    player.dx = Math.min(player.speed, player.dx + accel * dt); 
+    player.facing=1;
+  } else if(keys["KeyA"] || (!twoPlayerMode && keys["ArrowLeft"])){
+    player.dx = Math.max(-player.speed, player.dx - accel * dt); 
+    player.facing=-1;
+  } else {
+    player.dx *= friction;
+  }
+
+  // Player 2 Movement
+  if(twoPlayerMode){
+    if(keys["ArrowRight"]){
+      player2.dx = Math.min(player2.speed, player2.dx + accel * dt);
+      player2.facing=1;
+    } else if(keys["ArrowLeft"]){
+      player2.dx = Math.max(-player2.speed, player2.dx - accel * dt);
+      player2.facing=-1;
+    } else {
+      player2.dx *= friction;
+    }
+  }
+
+  // Player 1 Powerup Timers
+  if(player.speedBoostTimer > 0){
+    player.speedBoostTimer -= dt;
+    if(Math.floor(player.speedBoostTimer) % 3 === 0){
+      spawnParticles(player.x + player.w/2, player.y + player.h, "yellow", 1);
+    }
+    if(player.speedBoostTimer <= 0){
+      player.speed = player.baseSpeed;
+    }
+  }
+
+  // Player 2 Powerup Timers
+  if(twoPlayerMode && player2.speedBoostTimer > 0){
+    player2.speedBoostTimer -= dt;
+    if(Math.floor(player2.speedBoostTimer) % 3 === 0){
+      spawnParticles(player2.x + player2.w/2, player2.y + player2.h, "yellow", 1);
+    }
+    if(player2.speedBoostTimer <= 0){
+      player2.speed = player2.baseSpeed;
+    }
+  }
+
+  if(timeFreezeTimer > 0) timeFreezeTimer -= dt;
+
+  if(ghostTimer > 0){
+    ghostTimer -= dt;
+    if(Math.floor(ghostTimer) % 5 === 0){
+      spawnParticles(player.x + Math.random()*player.w, player.y + Math.random()*player.h, "white", 1);
+      if(twoPlayerMode) spawnParticles(player2.x + Math.random()*player2.w, player2.y + Math.random()*player2.h, "white", 1);
+    }
+  }
+
+  if(droneTimer > 0){
+    droneTimer -= dt;
+    droneAngle += 0.05 * dt;
+    let droneX = player.x + player.w/2 + Math.cos(droneAngle) * 35;
+    let droneY = player.y - 15 + Math.sin(droneAngle) * 10;
+
+    droneShootTimer -= dt;
+    if(droneShootTimer <= 0 && enemies.length > 0){
+      let nearest = null;
+      let minDst = 350;
+      enemies.forEach(e => {
+        let d = Math.hypot((e.x + e.w/2) - droneX, (e.y + e.h/2) - droneY);
+        if(d < minDst){ minDst = d; nearest = e; }
+      });
+
+      if(nearest){
+        let dx = (nearest.x + nearest.w/2) - droneX;
+        let dy = (nearest.y + nearest.h/2) - droneY;
+        let len = Math.hypot(dx, dy);
+        bullets.push({x: droneX, y: droneY, dx: (dx/len)*8, dy: (dy/len)*8});
+        sfxShoot();
+        droneShootTimer = 20;
+      }
+    }
+  }
+
+  if(debugMode && keys["KeyT"]){
+    player.x += 500;
+    if(twoPlayerMode) player2.x += 500;
+  }
+
+  player.dy += gravity * dt;
+  player.x += player.dx * dt;
+  player.y += player.dy * dt;
+  if(player.y>canvas.height+200) respawn(player);
+
+  if(twoPlayerMode){
+    player2.dy += gravity * dt;
+    player2.x += player2.dx * dt;
+    player2.y += player2.dy * dt;
+    if(player2.y>canvas.height+200) respawn(player2);
+  }
+
+  let wasGrounded = player.grounded;
+  player.grounded=false;
+  player.canWallJump=false;
+
+  platforms.forEach(p=>{
+    if(rect(player,p)){
+      if(player.dy>0){
+        player.y=p.y-player.h;
+        let impact = player.dy;
+        player.dy=0;
+        player.grounded=true;
+        player.jumps=0;
+
+        if(!wasGrounded){
+          let count = Math.min(Math.abs(impact)/2, 8);
+          spawnParticles(player.x+player.w/2, player.y+player.h, p.isCloud ? "rgba(255,255,255,0.7)" : "white", count);
+        }
+      } else player.canWallJump=true;
+    }
+  });
+
+  if(twoPlayerMode){
+    let wasGrounded2 = player2.grounded;
+    player2.grounded=false;
+    player2.canWallJump=false;
+
+    platforms.forEach(p=>{
+      if(rect(player2,p)){
+        if(player2.dy>0){
+          player2.y=p.y-player2.h;
+          let impact = player2.dy;
+          player2.dy=0;
+          player2.grounded=true;
+          player2.jumps=0;
+
+          if(!wasGrounded2){
+            let count = Math.min(Math.abs(impact)/2, 8);
+            spawnParticles(player2.x+player2.w/2, player2.y+player2.h, p.isCloud ? "rgba(255,255,255,0.7)" : "white", count);
+          }
+        } else player2.canWallJump=true;
+      }
+    });
+  }
+
+  if(player.grounded) coyoteTime = 6;
+  else coyoteTime -= dt;
+
+  if(jumpBuffer > 0){
+    if(coyoteTime > 0 || player.jumps < 2){
+      player.dy = -player.jump;
+      sfxJump();
+      player.jumps++;
+      jumpBuffer = 0;
+      coyoteTime = 0;
+    }
+    jumpBuffer -= dt;
+  }
+
+  if(twoPlayerMode){
+    if(player2.grounded) coyoteTime2 = 6;
+    else coyoteTime2 -= dt;
+
+    if(jumpBuffer2 > 0){
+      if(coyoteTime2 > 0 || player2.jumps < 2){
+        player2.dy = -player2.jump;
+        sfxJump();
+        player2.jumps++;
+        jumpBuffer2 = 0;
+        coyoteTime2 = 0;
+      }
+      jumpBuffer2 -= dt;
+    }
+  }
+
+  if((keys["ShiftLeft"]) && player.dash<=0){
+    player.dx=player.facing*30;
+    sfxDash();
+    player.dash=60;
+  }
+
+  if(!debugMode){
+    if(player.dash>0) player.dash -= dt;
+    if(twoPlayerMode && player2.dash>0) player2.dash -= dt;
+  } else { player.dash = 0; player2.dash = 0; }
+
+  if(debugMode){
+    if(keys["KeyQ"]) player.y -= 5 * dt;
+    if(keys["KeyE"]) player.y += 5 * dt;
+  }
+
+  let timeScale = (timeFreezeTimer > 0 ? 0.3 : 1.0) * dt;
+
+  enemies.forEach(e=>{
+    let targetP = player;
+    if(twoPlayerMode && Math.abs(player2.x - e.x) < Math.abs(player.x - e.x)){
+      targetP = player2;
+    }
+
+    if(e.type === "flying_shnail"){
+      e.hoverAngle += 0.05 * timeScale;
+      
+      let dirX = targetP.x - e.x;
+      let dirY = targetP.y - e.hoverBaseY;
+      let dist = Math.hypot(dirX, dirY);
+
+      if(dist > 0){
+        e.dx = (dirX / dist) * e.speed;
+        e.hoverBaseY += (dirY / dist) * e.speed * timeScale;
+      }
+      
+      e.x += e.dx * timeScale;
+      e.y = e.hoverBaseY + Math.sin(e.hoverAngle) * 12;
+    } else {
+      e.dy += gravity * timeScale;
+      e.x += e.dx * timeScale;
+      e.y += e.dy * timeScale;
+    }
+
+    if(e.type === "jumper"){
+      e.jumpTimer -= timeScale;
+      if(e.jumpTimer <= 0){
+        let dx = targetP.x - e.x;
+        e.dx = dx > 0 ? 2 : -2;
+        e.dy = -10;
+        e.jumpTimer = 90;
+      }
+    }
+    
+    if(e.type === "turret"){
+      e.shootTimer -= timeScale;
+      if(e.shootTimer <= 0){
+        let dx = targetP.x - e.x;
+        let dy = targetP.y - e.y;
+        let len = Math.hypot(dx,dy);
+        dx/=len; dy/=len;
+
+        enemyBullets.push({ x:e.x+e.w/2, y:e.y+e.h/2, dx:dx*3, dy:dy*3, color: "violet" });
+        sfxTurret();
+        e.shootTimer = 90;
+      }
+    }
+
+    if(e.type === "fire_turret"){
+      e.shootTimer -= timeScale;
+      if(e.shootTimer <= 0){
+        let dx = targetP.x - e.x;
+        let dy = targetP.y - e.y;
+        let baseAngle = Math.atan2(dy, dx);
+        
+        [-0.2, 0, 0.2].forEach(angleOffset => {
+          let angle = baseAngle + angleOffset;
+          enemyBullets.push({ 
+            x: e.x+e.w/2, 
+            y: e.y+e.h/2, 
+            dx: Math.cos(angle)*3.5, 
+            dy: Math.sin(angle)*3.5,
+            color: "#ff4400"
+          });
+        });
+        sfxTurret();
+        e.shootTimer = 100;
+      }
+    }
+    
+    if(e.type === "runner"){
+      e.dashCooldown -= timeScale;
+      if(!e.dashing && e.dashCooldown <= 0){
+        if(Math.abs(targetP.x - e.x) < 220 && Math.abs(targetP.y - e.y) < 40){
+          e.dashing = true;
+          e.dx = targetP.x > e.x ? 8 : -8;
+        }
+      }
+      if(e.dashing){
+        e.dx *= Math.pow(0.99, dt);
+        if(Math.abs(e.dx) < 1){
+          e.dx = 0;
+          e.dashing = false;
+          e.dashCooldown = 120;
+        }
+      }
+    }
+
+    let platformUnder=null;
+    platforms.forEach(p=>{
+      if(e.type !== "flying_shnail" && rect(e,p) && e.dy>0){
+        e.y=p.y-e.h;
+        e.dy=0;
+        platformUnder=p;
+      }
+    });
+
+    if(e.type !== "flying_shnail" && platformUnder && e.dx!==0 && e.type !== "runner"){
+        let frontX = e.dx>0 ? e.x+e.w+2 : e.x-2;
+        if(frontX < platformUnder.x || frontX > platformUnder.x+platformUnder.w){
+            e.dx *= -1;
+        }
+    }
+
+    // Player 1 Enemy Collision
+    if(rect(player,e) && !debugInvincible && ghostTimer <= 0){
+      if(player.shieldHits > 0){
+        player.shieldHits--;
+        spawnParticles(player.x+player.w/2, player.y+player.h/2, "cyan", 10);
+        addShake(5);
+        e.dead = true;
+      } else {
+        addShake(10);
+        flash = 10;
+        spawnParticles(player.x,player.y,"white");
+        respawn(player);
+      }
+    }
+
+    // Player 2 Enemy Collision
+    if(twoPlayerMode && rect(player2,e) && !debugInvincible && ghostTimer <= 0){
+      if(player2.shieldHits > 0){
+        player2.shieldHits--;
+        spawnParticles(player2.x+player2.w/2, player2.y+player2.h/2, "pink", 10);
+        addShake(5);
+        e.dead = true;
+      } else {
+        addShake(10);
+        flash = 10;
+        spawnParticles(player2.x,player2.y,"pink");
+        respawn(player2);
+      }
+    }
+  });
+
+  enemyBullets.forEach(b=>{
+    b.x += b.dx * timeScale;
+    b.y += b.dy * timeScale;
+
+    let bRect = {x:b.x, y:b.y, w:6, h:6};
+    if(rect(player, bRect) && !debugInvincible && ghostTimer <= 0){
+        if(player.shieldHits > 0){
+          player.shieldHits--;
+          spawnParticles(player.x+player.w/2, player.y+player.h/2, "cyan", 6);
+          b.dead = true;
+        } else {
+          addShake(10);
+          flash = 10;
+          spawnParticles(player.x, player.y, "purple");
+          respawn(player);
+        }
+    }
+
+    if(twoPlayerMode && rect(player2, bRect) && !debugInvincible && ghostTimer <= 0){
+        if(player2.shieldHits > 0){
+          player2.shieldHits--;
+          spawnParticles(player2.x+player2.w/2, player2.y+player2.h/2, "pink", 6);
+          b.dead = true;
+        } else {
+          addShake(10);
+          flash = 10;
+          spawnParticles(player2.x, player2.y, "pink");
+          respawn(player2);
+        }
+    }
+  });
+
+  enemyBullets = enemyBullets.filter(b =>
+    !b.dead &&
+    b.x > cameraX-50 &&
+    b.x < cameraX+canvas.width+50 &&
+    b.y > -50 &&
+    b.y < canvas.height+50
+  );
+
+  bullets.forEach(b=>{
+    if(b.dead) return;
+    b.x += b.dx * dt;
+    if(b.dy) b.y += b.dy * dt;
+
+    for(let e of enemies){
+      if(rect({x:b.x,y:b.y,w:5,h:5},e)){
+        addShake(5);
+        flash = 6;
+        spawnParticles(e.x,e.y,e.type==="flying_shnail"?"deepskyblue":"lime");
+
+        if(e.type==="shnail" || e.type==="flying_shnail" || e.type.includes("turret") || e.type==="jumper" || e.type==="runner" || e.type==="mummy"){
+          e.hp--;
+          if(e.hp<=0){
+            spawnParticles(e.x,e.y,e.type==="flying_shnail"?"dodgerblue":"green");
+            e.dead=true;
+            addScore(e.type.includes("turret")||e.type==="mummy"?30:20);
+          }
+        } else {
+          e.dead=true;
+          sfxEnemy();
+          addScore(10);
+        }
+        b.dead = true;
+        break;
+      }
+    }
+  });
+ 
+  bullets = bullets.filter(b=>!b.dead);
+  enemies = enemies.filter(e=>!e.dead);
+
+  coins.forEach(c=>{
+    let cRect = {x:c.x,y:c.y,w:10,h:10};
+    if(!c.taken && (rect(player, cRect) || (twoPlayerMode && rect(player2, cRect)))){
+      c.taken=true;
+      sfxCoin();
+      addScore(5);
+    }
+  });
+
+  ammoCrates.forEach(a=>{
+    let aRect = {x:a.x,y:a.y,w:12,h:12};
+    if(!a.taken){
+      if(rect(player, aRect)){
+        a.taken=true;
+        player.ammo=Math.min(player.ammo+5,player.maxAmmo);
+      } else if(twoPlayerMode && rect(player2, aRect)){
+        a.taken=true;
+        player2.ammo=Math.min(player2.ammo+5,player2.maxAmmo);
+      }
+    }
+  });
+
+  mushrooms.forEach(m=>{
+    let mRect = {x:m.x,y:m.y,w:16,h:16};
+    if(!m.taken){
+      let pHit = rect(player, mRect) ? player : (twoPlayerMode && rect(player2, mRect) ? player2 : null);
+      if(pHit){
+        m.taken=true;
+        sfxPowerup();
+        pHit.speed = 5.5;
+        pHit.speedBoostTimer = 300;
+        spawnParticles(pHit.x, pHit.y, "gold", 12);
+        addScore(15);
+      }
+    }
+  });
+
+  powerups.forEach(p=>{
+    let pRect = {x:p.x,y:p.y,w:16,h:16};
+    if(!p.taken){
+      let pHit = rect(player, pRect) ? player : (twoPlayerMode && rect(player2, pRect) ? player2 : null);
+      if(pHit){
+        p.taken = true;
+        sfxPowerup();
+        if(p.type === "shield"){
+          pHit.shieldHits = 5;
+          spawnParticles(pHit.x+15, pHit.y+15, "cyan", 12);
+        } else if(p.type === "triple"){
+          pHit.tripleShot = true;
+          spawnParticles(pHit.x+15, pHit.y+15, "orange", 12);
+        } else if(p.type === "freeze"){
+          timeFreezeTimer = 600;
+          spawnParticles(pHit.x+15, pHit.y+15, "purple", 12);
+        } else if(p.type === "drone"){
+          droneTimer = 900;
+          spawnParticles(pHit.x+15, pHit.y+15, "#00ff88", 12);
+        } else if(p.type === "ghost"){
+          ghostTimer = 480;
+          spawnParticles(pHit.x+15, pHit.y+15, "white", 12);
+        } else if(p.type === "nuke"){
+          triggerNuke();
+        }
+        addScore(25);
+      }
+    }
+  });
+
+  checkpoints.forEach(cp=>{
+    if(player.x>cp.x){
+      player.spawnX=cp.x;
+      player.spawnY=cp.y;
+    }
+    if(twoPlayerMode && player2.x>cp.x){
+      player2.spawnX=cp.x;
+      player2.spawnY=cp.y;
+    }
+  });
+
+  let cameraTarget = twoPlayerMode ? (player.x + player2.x) / 2 - 200 : player.x - 200;
+  cameraX += (cameraTarget - cameraX) * (1 - Math.pow(0.9, dt));
+
+  applyShake();
+  updateParticles();
+  updateHUD();
+
+  draw();
+  requestAnimationFrame(update);
+}
+
+function respawn(p = player){
+  sfxDeath();
+  p.x=p.spawnX;
+  p.y=p.spawnY;
+  p.dx=0;
+  p.dy=0;
+  p.speed = p.baseSpeed;
+  p.speedBoostTimer = 0;
+  p.shieldHits = 0;
+  p.tripleShot = false;
+}
+
+function drawCloudPlatform(x, y, w, h){
+  ctx.fillStyle = "rgba(255, 255, 255, 0.9)";
+  ctx.beginPath();
+  ctx.arc(x + 10, y + 10, 12, 0, Math.PI * 2);
+  ctx.arc(x + 30, y + 5, 15, 0, Math.PI * 2);
+  ctx.arc(x + 60, y + 5, 16, 0, Math.PI * 2);
+  ctx.arc(x + 85, y + 10, 12, 0, Math.PI * 2);
+  ctx.rect(x + 10, y, w - 20, h);
+  ctx.fill();
+}
+
+function draw(){
+  frameCount++;
+  const now = performance.now();
+
+  if(now - lastFPSUpdate >= 1000){
+      fps = frameCount;
+      frameCount = 0;
+      lastFPSUpdate = now;
+  }
+
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+
+  if(currentBiome.name === "Ice Cave"){
+    ctx.fillStyle = "rgba(255, 255, 255, 0.8)";
+    snowflakes.forEach(s => {
+      ctx.beginPath();
+      ctx.arc(s.x, s.y, s.r, 0, Math.PI*2);
+      ctx.fill();
+    });
+  }
+
+  if(timeFreezeTimer > 0){
+    ctx.fillStyle="rgba(166, 77, 255, 0.15)";
+    ctx.fillRect(0,0,canvas.width,canvas.height);
+  }
+
+  if(flash > 0){
+    ctx.fillStyle="rgba(255,255,255,0.2)";
+    ctx.fillRect(0,0,canvas.width,canvas.height);
+    flash -= dt;
+  }
+
+  ctx.save();
+  ctx.translate(-cameraX + shakeX, 0);
+
+  platforms.forEach(p=>{
+    if(p.isCloud){
+      drawCloudPlatform(p.x, p.y, p.w, p.h);
+    } else {
+      ctx.fillStyle=p.color || currentBiome.platform;
+      ctx.fillRect(p.x,p.y,p.w,p.h);
+    }
+  });
+
+  coins.forEach(c=>{
+    if(!c.taken){
+      ctx.fillStyle="gold";
+      ctx.fillRect(c.x,c.y,10,10);
+    }
+  });
+
+  mushrooms.forEach(m=>{
+    if(!m.taken){
+      ctx.fillStyle="gold";
+      ctx.fillRect(m.x, m.y, 16, 10);
+      ctx.fillStyle="white";
+      ctx.fillRect(m.x+3, m.y+2, 3, 3);
+      ctx.fillRect(m.x+10, m.y+2, 3, 3);
+      ctx.fillStyle="#ffedd8";
+      ctx.fillRect(m.x+4, m.y+10, 8, 6);
+    }
+  });
+
+  powerups.forEach(p=>{
+    if(!p.taken){
+      ctx.font = "14px monospace";
+      if(p.type === "shield"){
+        ctx.fillStyle = "cyan";
+        ctx.fillRect(p.x, p.y, 16, 16);
+        ctx.fillStyle = "black";
+        ctx.fillText("🛡️", p.x, p.y+13);
+      } else if(p.type === "triple"){
+        ctx.fillStyle = "orange";
+        ctx.fillRect(p.x, p.y, 16, 16);
+        ctx.fillStyle = "black";
+        ctx.fillText("3x", p.x+1, p.y+13);
+      } else if(p.type === "freeze"){
+        ctx.fillStyle = "#a64dff";
+        ctx.fillRect(p.x, p.y, 16, 16);
+        ctx.fillStyle = "white";
+        ctx.fillText("️❄", p.x, p.y+13);
+      } else if(p.type === "drone"){
+        ctx.fillStyle = "#00ff88";
+        ctx.fillRect(p.x, p.y, 16, 16);
+        ctx.fillStyle = "black";
+        ctx.fillText(" ", p.x, p.y+13);
+      } else if(p.type === "ghost"){
+        ctx.fillStyle = "#e0e0e0";
+        ctx.fillRect(p.x, p.y, 16, 16);
+        ctx.fillStyle = "black";
+        ctx.fillText("𓁹", p.x, p.y+13);
+      } else if(p.type === "nuke"){
+        ctx.fillStyle = "#ff3333";
+        ctx.fillRect(p.x, p.y, 16, 16);
+        ctx.fillStyle = "black";
+        ctx.fillText("☢", p.x, p.y+13);
+      }
+    }
+  });
+
+  enemies.forEach(e=>{
+    if(e.type==="shnail"){
+      ctx.save();
+      if(e.dx<0){
+        ctx.scale(-1,1);
+        ctx.translate(-e.x*2-e.w,0);
+      }
+      ctx.fillStyle="limegreen";
+      ctx.fillRect(e.x,e.y-4,12,12);
+      ctx.fillStyle="green";
+      ctx.fillRect(e.x+4,e.y,4,4);
+      ctx.fillStyle="darkgreen";
+      ctx.fillRect(e.x+6,e.y+6,e.w,10);
+      ctx.fillRect(e.x+e.w+4,e.y+4,2,4);
+      ctx.fillRect(e.x+e.w+7,e.y+4,2,4);
+      ctx.restore();
+    } else if(e.type==="flying_shnail"){
+      ctx.save();
+      if(e.dx<0){
+        ctx.scale(-1,1);
+        ctx.translate(-e.x*2-e.w,0);
+      }
+      ctx.fillStyle="deepskyblue";
+      ctx.fillRect(e.x,e.y-4,12,12);
+      ctx.fillStyle="dodgerblue";
+      ctx.fillRect(e.x+4,e.y,4,4);
+      ctx.fillStyle="navy";
+      ctx.fillRect(e.x+6,e.y+6,e.w,10);
+      ctx.fillRect(e.x+e.w+4,e.y+4,2,4);
+      ctx.fillRect(e.x+e.w+7,e.y+4,2,4);
+      ctx.fillStyle="lightblue";
+      let wingOffset = Math.sin(e.hoverAngle * 3) * 3;
+      ctx.fillRect(e.x+4, e.y-8 + wingOffset, 8, 4);
+      ctx.restore();
+    } else if(e.type==="mummy"){
+      ctx.fillStyle="#e0c068";
+      ctx.fillRect(e.x, e.y, e.w, e.h);
+      ctx.fillStyle="#333";
+      ctx.fillRect(e.x+3, e.y+4, e.w-6, 3);
+      ctx.fillStyle="red";
+      ctx.fillRect(e.x+5, e.y+5, 2, 2);
+      ctx.fillRect(e.x+12, e.y+5, 2, 2);
+    } else if(e.type==="jumper"){
+      ctx.fillStyle="cyan";
+      ctx.fillRect(e.x,e.y,e.w,e.h);
+      ctx.fillStyle="black";
+      let eyeX = e.dx >= 0 ? e.x + 14 : e.x + 4;
+      ctx.fillRect(eyeX, e.y+5, 3, 3);
+    } else if(e.type==="turret"){
+      ctx.fillStyle="purple";
+      ctx.fillRect(e.x,e.y,e.w,e.h);
+      ctx.fillStyle="violet";
+      ctx.fillRect(e.x+e.w, e.y+6, 8, 4);
+    } else if(e.type==="fire_turret"){
+      ctx.fillStyle="#d32f2f";
+      ctx.fillRect(e.x,e.y,e.w,e.h);
+      ctx.fillStyle="#ff6f00";
+      ctx.fillRect(e.x+e.w, e.y+4, 8, 8);
+    } else if(e.type==="runner"){
+      ctx.save();
+      if(e.dx<0){
+          ctx.scale(-1,1);
+          ctx.translate(-e.x*2-e.w,0);
+      }
+      ctx.fillStyle="orchid";
+      ctx.fillRect(e.x,e.y-4,12,12);
+      ctx.fillStyle="purple";
+      ctx.fillRect(e.x+4,e.y,4,4);
+      ctx.fillStyle="darkorchid";
+      ctx.fillRect(e.x+6,e.y+6,e.w,10);
+      ctx.fillRect(e.x+e.w+4,e.y+4,2,4);
+      ctx.fillRect(e.x+e.w+7,e.y+4,2,4);
+      ctx.restore();
+    } else { 
+      ctx.fillStyle="red"; 
+      ctx.fillRect(e.x,e.y,e.w,e.h); 
+    }
+  });
+
+  enemyBullets.forEach(b=>{
+    ctx.fillStyle=b.color || "violet";
+    ctx.fillRect(b.x,b.y,6,6);
+  });
+
+  checkpoints.forEach(cp=>{
+    ctx.fillStyle="blue";
+    ctx.fillRect(cp.x,cp.y,10,20);
+  });
+
+  ammoCrates.forEach(a=>{
+    if(!a.taken){
+      ctx.fillStyle="purple";
+      ctx.fillRect(a.x,a.y,12,12);
+    }
+  });
+
+  bullets.forEach(b=>{
+    ctx.fillStyle="orange";
+    ctx.fillRect(b.x,b.y,5,5);
+  });
+
+  particles.forEach(p=>{
+    ctx.fillStyle=p.color;
+    ctx.fillRect(p.x,p.y,3,3);
+  });
+
+  // Render Player 1
+  ctx.save();
+  if(ghostTimer > 0){
+    ctx.globalAlpha = 0.45;
+  }
+  ctx.fillStyle = player.speedBoostTimer > 0 ? "yellow" : "lightgreen";
+  ctx.fillRect(player.x,player.y,player.w,player.h);
+  ctx.restore();
+
+  if(player.shieldHits > 0){
+    ctx.strokeStyle = "cyan";
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.arc(player.x + player.w/2, player.y + player.h/2, player.w, 0, Math.PI * 2);
+    ctx.stroke();
+  }
+
+
+  if(twoPlayerMode){
+    ctx.save();
+    if(ghostTimer > 0){
+      ctx.globalAlpha = 0.45;
+    }
+    
+    // Player 2 (pink)
+    ctx.fillStyle = player2.speedBoostTimer > 0 ? "yellow" : "#ff69b4";
+    ctx.fillRect(player2.x, player2.y, player2.w, player2.h);
+
+    ctx.restore();
+
+    if(player2.shieldHits > 0){
+      ctx.strokeStyle = "pink";
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.arc(player2.x + player2.w/2, player2.y + player2.h/2, player2.w, 0, Math.PI * 2);
+      ctx.stroke();
+    }
+  }
+
+  if(droneTimer > 0){
+    let droneX = player.x + player.w/2 + Math.cos(droneAngle) * 35;
+    let droneY = player.y - 15 + Math.sin(droneAngle) * 10;
+    ctx.fillStyle = "#00ff88";
+    ctx.fillRect(droneX - 4, droneY - 4, 8, 8);
+    ctx.fillStyle = "white";
+    ctx.fillRect(droneX - 2, droneY - 2, 4, 4);
+  }
+
+  if(debugMode && debugHitboxes){
+    ctx.strokeStyle="red";
+    enemies.forEach(e=>{ ctx.strokeRect(e.x, e.y, e.w, e.h); });
+    ctx.strokeStyle="cyan";
+    ctx.strokeRect(player.x, player.y, player.w, player.h);
+    if(twoPlayerMode) ctx.strokeRect(player2.x, player2.y, player2.w, player2.h);
+  }
+
+  ctx.restore();
+
+  ctx.fillStyle="green";
+  ctx.fillText("#shnails4life",10,20);
+  ctx.fillText("Ammo: "+player.ammo+"/"+player.maxAmmo,10,60);
+  ctx.fillText("I = Controls",10,40);
+
+  if(player.speedBoostTimer > 0 || (twoPlayerMode && player2.speedBoostTimer > 0)){
+    ctx.fillStyle="yellow";
+    ctx.fillText("⚡ SPEED BOOST!", 10, 80);
+  }
+
+ if(debugMode){
+    ctx.fillStyle="red";
+    ctx.font="bold 18px monospace";
+    ctx.fillText("⚠ DEBUG MODE",10,100);
+
+    ctx.fillStyle="rgba(0,0,0,.75)";
+    ctx.fillRect(550,10,240,260);
+
+    ctx.strokeStyle="lime";
+    ctx.strokeRect(550,10,240,260);
+
+    ctx.fillStyle="lime";
+    ctx.font="14px monospace";
+    ctx.fillText("DEBUG MODE",565,30);
+
+    let distanceToNextBiome = Math.floor(nextBiomeTargetX - player.x);
+
+    ctx.fillStyle="white";
+    ctx.fillText("Invincible: " +(debugInvincible ? "ON" : "OFF"),565,55);
+    ctx.fillText("Infinite Ammo: " +(debugInfiniteAmmo ? "ON" : "OFF"),565,75);
+    ctx.fillText("Hitboxes: " +(debugHitboxes ? "ON" : "OFF"),565,95);
+    ctx.fillText("Noclip: " +(noclip ? "ON" : "OFF"),565,115);
+    ctx.fillText("Next Biome: "+distanceToNextBiome+" px",565,135);
+    ctx.fillText("Player X: "+Math.floor(player.x),565,155);
+    ctx.fillText("Player Y: "+Math.floor(player.y),565,175);
+    ctx.fillText("Velocity X: "+player.dx.toFixed(2),565,195);
+    ctx.fillText("Velocity Y: "+player.dy.toFixed(2),565,215);
+    ctx.fillText("Enemies: "+enemies.length,565,235);
+    ctx.fillText("FPS: "+fps,565,255);
+}
+
+  if(debugPopup > 0){
+    debugPopup -= dt;
+    ctx.fillStyle = debugMode ? "rgba(0,120,0,.9)" : "rgba(120,0,0,.9)";
+    ctx.fillRect(250,20,300,40);
+    ctx.strokeStyle = "white";
+    ctx.strokeRect(250,20,300,40);
+    ctx.fillStyle = "white";
+    ctx.font = "bold 18px monospace";
+    ctx.fillText(debugMode ? "🛠 DEBUG MODE ENABLED" : "🛠 DEBUG MODE DISABLED", 265, 46);
+  }
+}
+  
+function drawPauseScreen(){
+  draw();
+  ctx.fillStyle = "rgba(0,0,0,0.5)";
+  ctx.fillRect(0,0,canvas.width,canvas.height);
+
+  ctx.fillStyle = "lightgreen";
+  ctx.font = "30px monospace";
+  ctx.fillText("PAUSED", canvas.width/2 - 70, canvas.height/2);
+
+  ctx.font = "14px monospace";
+  ctx.fillText("Press ESC to resume", canvas.width/2 - 100, canvas.height/2 + 30);
+}
+</script>
+
+<script>
+if ("serviceWorker" in navigator) {
+    window.addEventListener("load", () => {
+        navigator.serviceWorker.register("./sw.js");
+    });
+}
+</script>
+
+</body>
+</html>
