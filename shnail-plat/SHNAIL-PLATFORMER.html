@@ -2,8 +2,7 @@
 <html>
 <head>
   <title>Shnail-platformer</title>
-  <link rel="icon" type="image/png" href="favicon.png">
-  <meta name="description" content="Shnail Platformer, a free endless browser platformer with enemies & regular updates. No download required.">
+  <link rel="icon" type="image/png" href="SHNAIL-PLATFORMER.png">
   <style>
     body { margin:0; overflow:hidden; background:#222; }
     canvas { display:block; margin:auto; background:#87CEEB; image-rendering:pixelated; transition: background 1s ease; }
@@ -63,7 +62,7 @@
       background:rgba(0,0,0,0.35);
       padding:6px 8px;
       border:1px solid rgba(255,255,255,0.15);
-      width:140px;
+      width:200px;
     }
 
     #powerupHud{
@@ -80,7 +79,7 @@
 
     .hudRow{ margin-bottom:5px; font-size:10px; }
     .bar{ width:100%; height:6px; background:#333; margin-top:2px; }
-    #ammoBar{ height:100%; width:100%; background:orange; }
+    #ammoBar{ height:100%; width:100%; background:lightgreen; }
   </style>
 </head>
 <body>
@@ -95,6 +94,7 @@
 <canvas id="game" width="800" height="400"></canvas>
 
 <div id="hud">
+  <div class="hudRow">This is NOT the actual version, play it at: <span id="biomeText">shnail-platformer.com</span></div>
   <div class="hudRow">
     🔫 Ammo
     <div class="bar"><div id="ammoBar"></div></div>
@@ -105,10 +105,10 @@
 </div>
 
 <div id="powerupHud">
-  <div id="shieldHud" style="display:none; color:#00ffff;">🛡️ Shield: <span id="shieldHitsText">0</span></div>
-  <div id="freezeHud" style="display:none; color:#a64dff;">❄️ Freeze: <span id="freezeTimeText">0</span>s</div>
-  <div id="droneHud" style="display:none; color:#00ff88;">🤖 Drone: <span id="droneTimeText">0</span>s</div>
-  <div id="ghostHud" style="display:none; color:#e0e0e0;">👻 Ghost: <span id="ghostTimeText">0</span>s</div>
+  <div id="shieldHud" style="display:none; color:#00ffff;">Shield: <span id="shieldHitsText">0</span></div>
+  <div id="freezeHud" style="display:none; color:#a64dff;">Freeze: <span id="freezeTimeText">0</span>s</div>
+  <div id="droneHud" style="display:none; color:#00ff88;">Drone: <span id="droneTimeText">0</span>s</div>
+  <div id="ghostHud" style="display:none; color:#e0e0e0;">Ghost: <span id="ghostTimeText">0</span>s</div>
 </div>
 
 <div id="controlsBox">
