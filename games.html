@@ -528,13 +528,16 @@
         <button class="tag-btn active" onclick="setCategory('all', this)">All</button>
         <button class="tag-btn" onclick="setCategory('favorites', this)">⭐ Favorites</button>
         <button class="tag-btn" onclick="setCategory('popular', this)">🔥 Popular</button>
+        <button class="tag-btn" onclick="setCategory('recommended', this)">Recommended</button>
         <button class="tag-btn" onclick="setCategory('arcade', this)">Arcade</button>
         <button class="tag-btn" onclick="setCategory('action', this)">Action</button>
+        <button class="tag-btn" onclick="setCategory('2-player', this)">2 Player</button>
         <button class="tag-btn" onclick="setCategory('sports', this)">Sports</button>
         <button class="tag-btn" onclick="setCategory('puzzle', this)">Puzzle</button>
         <button class="tag-btn" onclick="setCategory('runner', this)">Runner</button>
         <button class="tag-btn" onclick="setCategory('platformer', this)">Platformer</button>
         <button class="tag-btn" onclick="setCategory('moto', this)">Moto</button>
+        <button class="tag-btn" onclick="setCategory('shooting', this)">Shooting</button>
         <button class="tag-btn" onclick="setCategory('simulation', this)">Simulation</button>
 
         <span class="game-count" id="gameCount">Showing 0 games</span>
@@ -545,8 +548,8 @@
 
     <div class="game-grid" id="gameGrid">
 
-      <div class="game-card" data-category="platformer arcade" onclick="openGame('SHNAIL-PLATFORMER', 'https://shnail-boy.github.io/CALCULATOR-TOOL/shnail-plat/SHNAIL-PLATFORMER.html')">
-        <button class="fav-btn" onclick="toggleFavorite(event, this)">★</button>
+      <div class="game-card" data-category="platformer arcade 2-player recommended" onclick="openGame('SHNAIL-PLATFORMER', 'https://shnail-boy.github.io/CALCULATOR-TOOL/shnail-plat/SHNAIL-PLATFORMER.html')">
+        <button class="fav-btn" onclick="toggleFavorite(event, this)">಄</button>
         <img src="https://shnail-boy.github.io/CALCULATOR-TOOL/shnail-plat/SHNAIL-PLATFORMER.png" alt="SHNAIL-PLATFORMER">
         <span class="game-title">SHNAIL-PLATFORMER</span>
       </div>
@@ -563,31 +566,31 @@
         <span class="game-title">ADOFAI</span>
       </div>
       
-      <div class="game-card" data-category="popular arcade platformer" onclick="openGame('TAG', 'https://vexgame-unblocked.github.io/s3/tag/')">
+      <div class="game-card" data-category="popular arcade platformer 2-player recommended" onclick="openGame('TAG', 'https://vexgame-unblocked.github.io/s3/tag/')">
         <button class="fav-btn" onclick="toggleFavorite(event, this)">★</button>
         <img src="https://vexgame-unblocked.github.io/img/tag.png" alt="TAG">
         <span class="game-title">TAG</span>
       </div>
       
-      <div class="game-card" data-category="action" onclick="openGame('Masked Forces', 'https://vexgame-unblocked.github.io/s8/masked-forces/')">
+      <div class="game-card" data-category="action shooting" onclick="openGame('Masked Forces', 'https://vexgame-unblocked.github.io/s8/masked-forces/')">
         <button class="fav-btn" onclick="toggleFavorite(event, this)">★</button>
         <img src="https://vexgame-unblocked.github.io/img/masked-forces.png" alt="MASKEDFORCES">
         <span class="game-title">Masked Forces</span>
       </div>
 
-      <div class="game-card" data-category="popular action" onclick="openGame('Rooftop Snipers', 'https://vexgame-unblocked.github.io/s/rooftop-snipers/')">
+      <div class="game-card" data-category="popular action 2-player shooting recommended" onclick="openGame('Rooftop Snipers', 'https://vexgame-unblocked.github.io/s/rooftop-snipers/')">
         <button class="fav-btn" onclick="toggleFavorite(event, this)">★</button>
         <img src="https://vexgame-unblocked.github.io/img/rooftop-snipers.png" alt="ROOFTOPSNIPER">
         <span class="game-title">Rooftop Snipers</span>
       </div>
 
-      <div class="game-card" data-category="action platformer" onclick="openGame('Getaway Shootout', 'https://vexgame-unblocked.github.io/s4/getaway-shootout/')">
+      <div class="game-card" data-category="action platformer 2-player shooting" onclick="openGame('Getaway Shootout', 'https://vexgame-unblocked.github.io/s4/getaway-shootout/')">
         <button class="fav-btn" onclick="toggleFavorite(event, this)">★</button>
         <img src="https://vexgame-unblocked.github.io/img/getaway-shootout.png" alt="GETAWAYSHOOTOUT">
         <span class="game-title">Getaway Shootout</span>
       </div>
 
-      <div class="game-card" data-category="popular arcade runner" onclick="openGame('Slope', 'https://vexgame-unblocked.github.io/s/slope/')">
+      <div class="game-card" data-category="popular arcade runner recommended" onclick="openGame('Slope', 'https://vexgame-unblocked.github.io/s/slope/')">
         <button class="fav-btn" onclick="toggleFavorite(event, this)">★</button>
         <img src="https://vexgame-unblocked.github.io/img/slope.png" alt="SLOPE">
         <span class="game-title">Slope</span>
@@ -599,7 +602,7 @@
         <span class="game-title">Slope 2</span>
       </div>
       
-      <div class="game-card" data-category="popular arcade runner" onclick="openGame('Slope 3', 'https://vexgame-unblocked.github.io/s/slope-3/')">
+      <div class="game-card" data-category="popular arcade runner recommended" onclick="openGame('Slope 3', 'https://vexgame-unblocked.github.io/s/slope-3/')">
         <button class="fav-btn" onclick="toggleFavorite(event, this)">★</button>
         <img src="https://vexgame-unblocked.github.io/img/slope-3.png" alt="SLOPE3">
         <span class="game-title">Slope 3</span>
@@ -611,13 +614,13 @@
         <span class="game-title">Tunnel Rush</span>
       </div>
       
-      <div class="game-card" data-category="puzzle" onclick="openGame('Wordle Unlimited', 'https://vexgame-unblocked.github.io/s9/wordle-unlimited/')">
+      <div class="game-card" data-category="puzzle recommended" onclick="openGame('Wordle Unlimited', 'https://vexgame-unblocked.github.io/s9/wordle-unlimited/')">
         <button class="fav-btn" onclick="toggleFavorite(event, this)">★</button>
         <img src="https://vexgame-unblocked.github.io/img/wordle-unlimited.png" alt="WORDLE">
         <span class="game-title">Wordle Unlimited</span>
       </div>
 
-      <div class="game-card" data-category="sports" onclick="openGame('Basketball Stars', 'https://vexgame-unblocked.github.io/s/basketball-stars/')">
+      <div class="game-card" data-category="sports 2-player" onclick="openGame('Basketball Stars', 'https://vexgame-unblocked.github.io/s/basketball-stars/')">
         <button class="fav-btn" onclick="toggleFavorite(event, this)">★</button>
         <img src="https://vexgame-unblocked.github.io/img/basketball-stars.png" alt="BASKETBALLSTAR">
         <span class="game-title">Basketball Stars</span>
@@ -641,13 +644,13 @@
         <span class="game-title">Stickman Hook</span>
       </div>
 
-      <div class="game-card" data-category="puzzle" onclick="openGame('Master Chess', 'https://vexgame-unblocked.github.io/s7/master-chess/')">
+      <div class="game-card" data-category="puzzle 2-player" onclick="openGame('Master Chess', 'https://vexgame-unblocked.github.io/s7/master-chess/')">
         <button class="fav-btn" onclick="toggleFavorite(event, this)">★</button>
         <img src="https://vexgame-unblocked.github.io/img/master-chess.png" alt="MASTERCHESS">
         <span class="game-title">Master Chess</span>
       </div>
 
-      <div class="game-card" data-category="popular arcade" onclick="openGame('Stack', 'https://vexgame-unblocked.github.io/s2/stack/')">
+      <div class="game-card" data-category="popular arcade recommended" onclick="openGame('Stack', 'https://vexgame-unblocked.github.io/s2/stack/')">
         <button class="fav-btn" onclick="toggleFavorite(event, this)">★</button>
         <img src="https://vexgame-unblocked.github.io/img/stack.png" alt="STACK">
         <span class="game-title">Stack</span>
@@ -665,7 +668,7 @@
         <span class="game-title">Escape Road</span>
       </div>
 
-      <div class="game-card" data-category="puzzle" onclick="openGame('There Is No Game', 'https://vexgame-unblocked.github.io/s/there-is-no-game/')">
+      <div class="game-card" data-category="puzzle recommended" onclick="openGame('There Is No Game', 'https://vexgame-unblocked.github.io/s/there-is-no-game/')">
         <button class="fav-btn" onclick="toggleFavorite(event, this)">★</button>
         <img src="https://vexgame-unblocked.github.io/img/there-is-no-game.png" alt="THEREISNOGAME">
         <span class="game-title">There Is No Game</span>
@@ -694,14 +697,20 @@
         <img src="https://vexgame-unblocked.github.io/img/penalty-shooters-2.png" alt="PENALTYSHOOTERS2">
         <span class="game-title">Penalty Shooters 2</span>
       </div>
+      
+      <div class="game-card" data-category="sports 2-player" onclick="openGame('Soccer Random', 'https://vexgame-unblocked.github.io/s8/soccer-random')">
+        <button class="fav-btn" onclick="toggleFavorite(event, this)">★</button>
+        <img src="https://vexgame-unblocked.github.io/img/soccer-random.png" alt="SOCCERRANDOM">
+        <span class="game-title">Soccer Random</span>
+      </div>
 
-      <div class="game-card" data-category="runner arcade" onclick="openGame('Jetpack Joyride', 'https://vexgame-unblocked.github.io/s7/jetpack-joyride/')">
+      <div class="game-card" data-category="runner arcade shooting recommended" onclick="openGame('Jetpack Joyride', 'https://vexgame-unblocked.github.io/s7/jetpack-joyride/')">
         <button class="fav-btn" onclick="toggleFavorite(event, this)">★</button>
         <img src="https://vexgame-unblocked.github.io/img/jetpack-joyride.png" alt="JETPACKJOYRIDE">
         <span class="game-title">Jetpack Joyride</span>
       </div>
 
-      <div class="game-card" data-category="puzzle platformer" onclick="openGame('Plactions', 'https://vexgame-unblocked.github.io/s6/plactions/')">
+      <div class="game-card" data-category="puzzle platformer recommended" onclick="openGame('Plactions', 'https://vexgame-unblocked.github.io/s6/plactions/')">
         <button class="fav-btn" onclick="toggleFavorite(event, this)">★</button>
         <img src="https://vexgame-unblocked.github.io/img/plactions.png" alt="PLACTIONS">
         <span class="game-title">Plactions</span>
@@ -741,6 +750,30 @@
         <button class="fav-btn" onclick="toggleFavorite(event, this)">★</button>
         <img src="https://vexgame-unblocked.github.io/img/bitlife.png" alt="BITLIFE">
         <span class="game-title">Bitlife</span>
+      </div>
+
+      <div class="game-card" data-category="platformer 2-player arcade shooting" onclick="openGame('Temple Of Boom', 'https://vexgame-unblocked.github.io/s3/temple-of-boom')">
+        <button class="fav-btn" onclick="toggleFavorite(event, this)">★</button>
+        <img src="https://vexgame-unblocked.github.io/img/temple-of-boom.png" alt="TEMPLEOFBOOM">
+        <span class="game-title">Temple Of Boom</span>
+      </div>
+
+      <div class="game-card" data-category="simulation" onclick="openGame('Duck Life', 'https://vexgame-unblocked.github.io/s/duck-life')">
+        <button class="fav-btn" onclick="toggleFavorite(event, this)">★</button>
+        <img src="https://vexgame-unblocked.github.io/img/duck-life.png" alt="DUCKLIFE">
+        <span class="game-title">Duck Life</span>
+      </div>
+
+      <div class="game-card" data-category="simulation" onclick="openGame('Duck Life 3', 'https://vexgame-unblocked.github.io/s/duck-life-3-evolution')">
+        <button class="fav-btn" onclick="toggleFavorite(event, this)">★</button>
+        <img src="https://vexgame-unblocked.github.io/img/duck-life-3-evolution.png" alt="DUCKLIFE3">
+        <span class="game-title">Duck Life 3</span>
+      </div>
+
+      <div class="game-card" data-category="simulation" onclick="openGame('Duck Life 4', 'https://vexgame-unblocked.github.io/s/duck-life-4')">
+        <button class="fav-btn" onclick="toggleFavorite(event, this)">★</button>
+        <img src="https://vexgame-unblocked.github.io/img/duck-life-4.png" alt="DUCKLIFE4">
+        <span class="game-title">Duck Life 4</span>
       </div>
       
     </div>
