@@ -540,6 +540,7 @@
         <button class="tag-btn" onclick="setCategory('shooting', this)">Shooting</button>
         <button class="tag-btn" onclick="setCategory('simulation', this)">Simulation</button>
         <button class="tag-btn" onclick="setCategory('horror', this)">Horror</button>
+        <button class="tag-btn" onclick="setCategory('retro', this)">Retro</button>
 
         <span class="game-count" id="gameCount">Showing 0 games</span>
       </div>
@@ -794,19 +795,13 @@
         <img src="https://vexgame-unblocked.github.io/img/among-us.png" alt="AMONGUS">
         <span class="game-title">Among Us</span>
       </div>
-      
-      <div class="game-card" data-category="horror" onclick="openGame('Backrooms', 'https://shnail-boy.github.io/CALCULATOR-TOOL/game/backrooms')">
+
+      <div class="game-card" data-category="retro platformer recommended" onclick="openRomGame('Super Mario Bros', 'https://shnail-boy.github.io/CALCULATOR-TOOL/game/Super%20Mario%20Bros.nes', 'nes')">
         <button class="fav-btn" onclick="toggleFavorite(event, this)">★</button>
-        <img src="https://arcadino.com/wp-content/uploads/2026/04/Backrooms.webp" alt="BACKROOMS">
-        <span class="game-title">Backrooms</span>
+        <img src="https://sm.ign.com/t/ign_in/cover/s/super-mari/super-mario-bros_sqm4.1200.jpg" alt="MARIO">
+        <span class="game-title">Super Mario Bros</span>
       </div>
-            
-      <div class="game-card" data-category="horror" onclick="openGame('FNAF', 'https://shnail-boy.github.io/CALCULATOR-TOOL/game/FNAF')">
-        <button class="fav-btn" onclick="toggleFavorite(event, this)">★</button>
-        <img src="https://fnaf1.io/cache/data/image/options/fnaf-1-logo-m60x60.jpg" alt="FNAF">
-        <span class="game-title">FNAF</span>
-      </div>
-      
+
     </div>
   </div>
 
@@ -822,7 +817,20 @@
       <iframe id="gameFrame" src="" allowfullscreen></iframe>
     </div>
   </div>
- 
+
+  <!-- ROM / ZIP Emulator Modal -->
+  <div id="romModal" class="modal">
+    <div id="romModalContent" class="modal-content">
+      <div class="modal-controls">
+        <button class="fullscreen-btn" onclick="toggleRomFullscreen()" title="Toggle Fullscreen">⛶</button>
+        <button class="close-btn" onclick="closeRomModal()" title="Close">&times;</button>
+      </div>
+
+      <div id="ejsContainer" style="display: none; width: 100%; height: 100%;"></div>
+      <div id="ejsScriptSlot"></div>
+    </div>
+  </div>
+
 <!-- Game Request Modal -->
 <div id="requestModal" class="modal">
   <div class="settings-modal-content">
@@ -1010,6 +1018,79 @@ async function submitRequest() {
       document.getElementById('gameModal').style.display = 'none';
       document.getElementById('gameFrame').src = '';
       if (fpsActive) toggleFPSOverlay();
+    }
+
+    /* --- ROM / ZIP Emulator Logic (EmulatorJS) --- */
+    let romObjectUrl = null;
+
+    function closeRomModal() {
+      if (document.fullscreenElement) {
+        document.exitFullscreen();
+      }
+      document.getElementById('romModal').style.display = 'none';
+
+      // Tear down the emulator instance so the next game starts clean
+      document.getElementById('ejsContainer').innerHTML = '';
+      document.getElementById('ejsContainer').style.display = 'none';
+      document.getElementById('ejsScriptSlot').innerHTML = '';
+
+      if (romObjectUrl) {
+        URL.revokeObjectURL(romObjectUrl);
+        romObjectUrl = null;
+      }
+
+      try { delete window.EJS_player; } catch (e) { window.EJS_player = undefined; }
+    }
+
+    function toggleRomFullscreen() {
+      const modalContent = document.getElementById('romModalContent');
+      if (!document.fullscreenElement) {
+        if (modalContent.requestFullscreen) {
+          modalContent.requestFullscreen();
+        } else if (modalContent.webkitRequestFullscreen) {
+          modalContent.webkitRequestFullscreen();
+        } else if (modalContent.msRequestFullscreen) {
+          modalContent.msRequestFullscreen();
+        }
+      } else {
+        if (document.exitFullscreen) {
+          document.exitFullscreen();
+        } else if (document.webkitExitFullscreen) {
+          document.webkitExitFullscreen();
+        } else if (document.msExitFullscreen) {
+          document.msExitFullscreen();
+        }
+      }
+    }
+
+    /* Launch a ROM/ZIP that's hosted at a URL (e.g. in this repo) directly,
+       skipping the file picker — used by game cards below. */
+    function openRomGame(title, url, core) {
+      addRecentlyPlayed(title);
+
+      document.getElementById('romModal').style.display = 'flex';
+
+      if (romObjectUrl) {
+        URL.revokeObjectURL(romObjectUrl);
+        romObjectUrl = null;
+      }
+
+      const container = document.getElementById('ejsContainer');
+      container.innerHTML = '';
+      container.style.display = 'block';
+
+      window.EJS_player = '#ejsContainer';
+      window.EJS_gameUrl = url;
+      window.EJS_core = core;
+      window.EJS_gameName = title;
+      window.EJS_pathtodata = 'https://cdn.emulatorjs.org/stable/data/';
+      window.EJS_startOnLoaded = true;
+
+      const scriptSlot = document.getElementById('ejsScriptSlot');
+      scriptSlot.innerHTML = '';
+      const script = document.createElement('script');
+      script.src = 'https://cdn.emulatorjs.org/stable/data/loader.js';
+      scriptSlot.appendChild(script);
     }
 
     /* --- Fullscreen Mode Toggle --- */
