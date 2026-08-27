@@ -539,6 +539,7 @@
         <button class="tag-btn" onclick="setCategory('moto', this)">Moto</button>
         <button class="tag-btn" onclick="setCategory('shooting', this)">Shooting</button>
         <button class="tag-btn" onclick="setCategory('simulation', this)">Simulation</button>
+        <button class="tag-btn" onclick="setCategory('horror', this)">Horror</button>
         <button class="tag-btn" onclick="setCategory('retro', this)">Retro</button>
 
         <span class="game-count" id="gameCount">Showing 0 games</span>
@@ -795,7 +796,7 @@
         <span class="game-title">Among Us</span>
       </div>
 
-      <div class="game-card" data-category="retro platformer recommended" onclick="openRomGame('Super Mario Bros', 'https://shnail-boy.github.io/CALCULATOR-TOOL/game/Super%20Mario%20Bros.nes', 'nes')">
+      <div class="game-card" data-category="retro platformer recommended" onclick="openRomGame('Super Mario Bros', 'https://shnail-boy.github.io/CALCULATOR-TOOL/game/Super-Mario-Bros.nes', 'nes')">
         <button class="fav-btn" onclick="toggleFavorite(event, this)">★</button>
         <img src="https://sm.ign.com/t/ign_in/cover/s/super-mari/super-mario-bros_sqm4.1200.jpg" alt="MARIO">
         <span class="game-title">Super Mario Bros</span>
@@ -1062,7 +1063,7 @@ async function submitRequest() {
       }
     }
 
-    /* Launch a ROM/ZIP that's hosted at a URL (e.g. in this repo) directly,
+    /* Launch a ROM/ZIP that's hosted at a URL directly,
        skipping the file picker — used by game cards below. */
     function openRomGame(title, url, core) {
       addRecentlyPlayed(title);
@@ -1079,7 +1080,7 @@ async function submitRequest() {
       container.style.display = 'block';
 
       window.EJS_player = '#ejsContainer';
-      window.EJS_gameUrl = url;
+      window.EJS_gameUrl = encodeURI(url);
       window.EJS_core = core;
       window.EJS_gameName = title;
       window.EJS_pathtodata = 'https://cdn.emulatorjs.org/stable/data/';
