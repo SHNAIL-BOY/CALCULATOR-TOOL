@@ -498,6 +498,7 @@
         <option value="ep">Education Perfect</option>
         <option value="mathspace">Mathspace</option>
         <option value="canva">Canva</option>
+        <option value="custom">Custom...</option>
       </select>
 
       <select id="themeSelector" class="theme-select" onchange="changeTheme(this.value)">
@@ -899,6 +900,38 @@
     <button class="action-btn" style="padding: 10px; justify-content: center;" onclick="submitRequest()">Submit Request</button>
   </div>
 </div>
+
+  <!-- Custom Tab Cloak Modal -->
+  <div id="customCloakModal" class="modal">
+    <div class="settings-modal-content">
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <h3 style="font-size: 18px;">🎭 Custom Tab Cloak</h3>
+        <button class="close-btn" onclick="closeCustomCloakModal()">&times;</button>
+      </div>
+
+      <div class="settings-field">
+        <label for="customCloakTitle">Tab Title:</label>
+        <input type="text" id="customCloakTitle" placeholder="e.g. My Documents">
+      </div>
+
+      <div class="settings-field">
+        <label for="customCloakIconUrl">Icon URL:</label>
+        <input type="url" id="customCloakIconUrl" placeholder="https://example.com/favicon.ico" oninput="clearCustomCloakUpload()">
+      </div>
+
+      <div class="settings-field">
+        <label for="customCloakIconFile">...or upload an icon:</label>
+        <input type="file" id="customCloakIconFile" accept="image/*" onchange="handleCustomCloakUpload(this)">
+      </div>
+
+      <div id="customCloakPreview" style="display:none; align-items:center; gap:8px; margin-top:4px;">
+        <img id="customCloakPreviewImg" src="" alt="icon preview" style="width:20px; height:20px;">
+        <span style="font-size: 13px; opacity: 0.8;">Preview</span>
+      </div>
+
+      <button class="action-btn" style="padding: 10px; justify-content: center; margin-top: 8px;" onclick="saveCustomCloak()">Apply Cloak</button>
+    </div>
+  </div>
 
   <!-- Panic Settings Modal -->
   <div id="settingsModal" class="modal">
@@ -1336,10 +1369,8 @@ async function submitRequest() {
       }
     };
 
-    function changeCloak(cloakKey) {
-      const selected = cloaks[cloakKey] || cloaks.default;
-      
-      document.title = selected.title;
+    function applyCloak(title, icon) {
+      document.title = title;
 
       let favicon = document.getElementById('favicon');
       if (!favicon) {
@@ -1348,13 +1379,112 @@ async function submitRequest() {
         favicon.rel = 'icon';
         document.head.appendChild(favicon);
       }
-      favicon.href = selected.icon;
+      favicon.href = icon;
+    }
 
+    function changeCloak(cloakKey) {
+      if (cloakKey === 'custom') {
+        openCustomCloakModal();
+        return;
+      }
+
+      const selected = cloaks[cloakKey] || cloaks.default;
+      applyCloak(selected.title, selected.icon);
       localStorage.setItem('siteCloak', cloakKey);
     }
 
+    /* --- Custom Cloak Logic --- */
+    let pendingCustomIcon = null;
+
+    function openCustomCloakModal() {
+      const saved = JSON.parse(localStorage.getItem('customCloak') || 'null');
+      if (saved) {
+        document.getElementById('customCloakTitle').value = saved.title || '';
+        if (saved.icon && saved.icon.startsWith('data:')) {
+          pendingCustomIcon = saved.icon;
+          document.getElementById('customCloakIconUrl').value = '';
+          showCustomCloakPreview(saved.icon);
+        } else {
+          document.getElementById('customCloakIconUrl').value = saved.icon || '';
+          pendingCustomIcon = null;
+          showCustomCloakPreview(saved.icon || '');
+        }
+      }
+      document.getElementById('customCloakModal').style.display = 'flex';
+    }
+
+    function closeCustomCloakModal() {
+      document.getElementById('customCloakModal').style.display = 'none';
+
+      // If the user backs out without saving a custom cloak, fall back
+      // to whatever cloak was actually active before opening this modal.
+      const saved = localStorage.getItem('siteCloak') || 'default';
+      document.getElementById('cloakSelector').value = saved;
+    }
+
+    function clearCustomCloakUpload() {
+      pendingCustomIcon = null;
+      document.getElementById('customCloakIconFile').value = '';
+      showCustomCloakPreview(document.getElementById('customCloakIconUrl').value.trim());
+    }
+
+    function handleCustomCloakUpload(input) {
+      const file = input.files && input.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        pendingCustomIcon = e.target.result;
+        document.getElementById('customCloakIconUrl').value = '';
+        showCustomCloakPreview(pendingCustomIcon);
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function showCustomCloakPreview(src) {
+      const preview = document.getElementById('customCloakPreview');
+      const img = document.getElementById('customCloakPreviewImg');
+      if (src) {
+        img.src = src;
+        preview.style.display = 'flex';
+      } else {
+        preview.style.display = 'none';
+      }
+    }
+
+    function saveCustomCloak() {
+      const title = document.getElementById('customCloakTitle').value.trim();
+      const urlIcon = document.getElementById('customCloakIconUrl').value.trim();
+      const icon = pendingCustomIcon || urlIcon;
+
+      if (!title || !icon) {
+        alert('Please give the tab a title and either upload an icon or paste an icon link.');
+        return;
+      }
+
+      const customCloak = { title, icon };
+      localStorage.setItem('customCloak', JSON.stringify(customCloak));
+      localStorage.setItem('siteCloak', 'custom');
+
+      cloaks.custom = customCloak;
+      applyCloak(title, icon);
+
+      document.getElementById('cloakSelector').value = 'custom';
+      document.getElementById('customCloakModal').style.display = 'none';
+    }
+
     const savedCloak = localStorage.getItem('siteCloak') || 'default';
-    changeCloak(savedCloak);
+    if (savedCloak === 'custom') {
+      const savedCustom = JSON.parse(localStorage.getItem('customCloak') || 'null');
+      if (savedCustom) {
+        cloaks.custom = savedCustom;
+        applyCloak(savedCustom.title, savedCustom.icon);
+      } else {
+        applyCloak(cloaks.default.title, cloaks.default.icon);
+      }
+    } else {
+      changeCloak(savedCloak);
+    }
     document.getElementById('cloakSelector').value = savedCloak;
 
     // Initialize UI on load
