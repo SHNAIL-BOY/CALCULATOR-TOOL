@@ -81,6 +81,51 @@
       --btn-equals-text: #0b132b;
     }
 
+    [data-theme="sunset"] {
+      --bg-color: #2d1b2e;
+      --card-bg: #3d2438;
+      --input-bg: #1f1420;
+      --text-color: #ffe8d6;
+      --accent-color: #ff6b35;
+      --header-bg: #3d2438;
+      --btn-func-bg: #4a2c45;
+      --btn-func-text: #ffe8d6;
+      --btn-num-bg: #5c3a56;
+      --btn-num-text: #ffffff;
+      --btn-equals-bg: #ff6b35;
+      --btn-equals-text: #2d1b2e;
+    }
+
+    [data-theme="forest"] {
+      --bg-color: #142d1f;
+      --card-bg: #1e3f2a;
+      --input-bg: #0d1f14;
+      --text-color: #d8f3dc;
+      --accent-color: #52b788;
+      --header-bg: #1e3f2a;
+      --btn-func-bg: #2d6a4f;
+      --btn-func-text: #d8f3dc;
+      --btn-num-bg: #40916c;
+      --btn-num-text: #ffffff;
+      --btn-equals-bg: #52b788;
+      --btn-equals-text: #142d1f;
+    }
+
+    [data-theme="ocean"] {
+      --bg-color: #0a1f2e;
+      --card-bg: #12374d;
+      --input-bg: #071620;
+      --text-color: #d6f0ff;
+      --accent-color: #00b4d8;
+      --header-bg: #12374d;
+      --btn-func-bg: #1b5e7a;
+      --btn-func-text: #d6f0ff;
+      --btn-num-bg: #2389a8;
+      --btn-num-text: #ffffff;
+      --btn-equals-bg: #00b4d8;
+      --btn-equals-text: #0a1f2e;
+    }
+
     * {
       box-sizing: border-box;
       margin: 0;
@@ -426,6 +471,91 @@
       font-size: 15px;
       outline: none;
     }
+
+    /* --- Custom Theme Builder Modal --- */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0, 0, 0, 0.85);
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+
+    .settings-modal-content {
+      background: var(--card-bg);
+      padding: 24px;
+      border-radius: 16px;
+      width: 90%;
+      max-width: 480px;
+      max-height: 85vh;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      color: var(--text-color);
+      border: 1px solid var(--accent-color);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    }
+
+    .settings-field {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .settings-field label {
+      font-size: 13px;
+      font-weight: 600;
+      opacity: 0.9;
+    }
+
+    .settings-field input[type="color"] {
+      width: 100%;
+      height: 42px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 8px;
+      background: none;
+      cursor: pointer;
+      padding: 4px;
+    }
+
+    .action-btn {
+      background-color: var(--card-bg);
+      border: 1px solid var(--accent-color);
+      color: var(--text-color);
+      padding: 10px 18px;
+      border-radius: 12px;
+      font-weight: 700;
+      font-size: 14px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: background-color 0.2s ease, transform 0.1s ease;
+    }
+
+    .action-btn:hover {
+      background-color: var(--accent-color);
+      color: #000;
+    }
+
+    .close-btn {
+      color: var(--text-color);
+      font-size: 24px;
+      font-weight: bold;
+      cursor: pointer;
+      background: none;
+      border: none;
+      transition: color 0.2s ease;
+    }
+
+    .close-btn:hover {
+      color: var(--accent-color);
+    }
   </style>
 </head>
 <body>
@@ -442,6 +572,10 @@
         <option value="neon">Neon</option>
         <option value="light">Light</option>
         <option value="midnight">Midnight</option>
+        <option value="sunset">Sunset</option>
+        <option value="forest">Forest</option>
+        <option value="ocean">Ocean</option>
+        <option value="custom">Custom...</option>
       </select>
     </nav>
   </header>
@@ -564,6 +698,58 @@
       <div class="converter-row">
         <label>Converted Result:</label>
         <input type="text" id="unitOutput" readonly placeholder="0">
+      </div>
+    </div>
+  </div>
+
+  <!-- Custom Theme Builder Modal -->
+  <div id="themeBuilderModal" class="modal">
+    <div class="settings-modal-content">
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <h3 style="font-size: 18px;">🎨 Custom Theme Builder</h3>
+        <button class="close-btn" onclick="closeThemeBuilderModal()">&times;</button>
+      </div>
+
+      <div class="settings-field">
+        <label for="themeVar_bg-color">Background:</label>
+        <input type="color" id="themeVar_bg-color">
+      </div>
+      <div class="settings-field">
+        <label for="themeVar_card-bg">Card / Panel:</label>
+        <input type="color" id="themeVar_card-bg">
+      </div>
+      <div class="settings-field">
+        <label for="themeVar_input-bg">Input Field:</label>
+        <input type="color" id="themeVar_input-bg">
+      </div>
+      <div class="settings-field">
+        <label for="themeVar_header-bg">Header:</label>
+        <input type="color" id="themeVar_header-bg">
+      </div>
+      <div class="settings-field">
+        <label for="themeVar_text-color">Text:</label>
+        <input type="color" id="themeVar_text-color">
+      </div>
+      <div class="settings-field">
+        <label for="themeVar_accent-color">Accent:</label>
+        <input type="color" id="themeVar_accent-color">
+      </div>
+      <div class="settings-field">
+        <label for="themeVar_btn-func-bg">Function Buttons:</label>
+        <input type="color" id="themeVar_btn-func-bg">
+      </div>
+      <div class="settings-field">
+        <label for="themeVar_btn-num-bg">Number Buttons:</label>
+        <input type="color" id="themeVar_btn-num-bg">
+      </div>
+      <div class="settings-field">
+        <label for="themeVar_btn-equals-bg">Equals Button:</label>
+        <input type="color" id="themeVar_btn-equals-bg">
+      </div>
+
+      <div style="display: flex; gap: 8px;">
+        <button class="action-btn" style="flex: 1;" onclick="resetThemeBuilder()">Reset</button>
+        <button class="action-btn" style="flex: 1;" onclick="saveCustomTheme()">Apply Theme</button>
       </div>
     </div>
   </div>
@@ -745,7 +931,39 @@
     }
 
     /* --- Theme Selector (Default set to Dark) --- */
+    const THEME_VARS = ['--bg-color', '--card-bg', '--input-bg', '--header-bg', '--text-color', '--accent-color', '--btn-func-bg', '--btn-num-bg', '--btn-equals-bg'];
+    const DEFAULT_THEME_VARS = {
+      '--bg-color': '#202124',
+      '--card-bg': '#292a2d',
+      '--input-bg': '#202124',
+      '--header-bg': '#292a2d',
+      '--text-color': '#e8eaed',
+      '--accent-color': '#8ab4f8',
+      '--btn-func-bg': '#3c4043',
+      '--btn-num-bg': '#5f6368',
+      '--btn-equals-bg': '#8ab4f8'
+    };
+
+    function themeFieldId(varName) {
+      return 'themeVar_' + varName.replace('--', '');
+    }
+
+    function getContrastText(hex) {
+      hex = (hex || '#000000').replace('#', '');
+      if (hex.length === 3) hex = hex.split('').map(c => c + c).join('');
+      const r = parseInt(hex.substr(0, 2), 16);
+      const g = parseInt(hex.substr(2, 2), 16);
+      const b = parseInt(hex.substr(4, 2), 16);
+      const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+      return luminance > 0.55 ? '#111111' : '#ffffff';
+    }
+
     function changeTheme(themeName) {
+      if (themeName === 'custom') {
+        openThemeBuilderModal();
+        return;
+      }
+      clearCustomThemeOverrides();
       document.documentElement.setAttribute('data-theme', themeName);
       localStorage.setItem('siteTheme', themeName);
       if (document.getElementById('tool-graph').classList.contains('active')) {
@@ -753,8 +971,74 @@
       }
     }
 
+    function applyCustomThemeVars(themeObj) {
+      THEME_VARS.forEach(v => {
+        if (themeObj[v]) document.documentElement.style.setProperty(v, themeObj[v]);
+      });
+      if (themeObj['--btn-func-bg']) {
+        document.documentElement.style.setProperty('--btn-func-text', getContrastText(themeObj['--btn-func-bg']));
+      }
+      if (themeObj['--btn-num-bg']) {
+        document.documentElement.style.setProperty('--btn-num-text', getContrastText(themeObj['--btn-num-bg']));
+      }
+      if (themeObj['--btn-equals-bg']) {
+        document.documentElement.style.setProperty('--btn-equals-text', getContrastText(themeObj['--btn-equals-bg']));
+      }
+      if (document.getElementById('tool-graph').classList.contains('active')) {
+        drawGraph();
+      }
+    }
+
+    function clearCustomThemeOverrides() {
+      THEME_VARS.forEach(v => document.documentElement.style.removeProperty(v));
+      ['--btn-func-text', '--btn-num-text', '--btn-equals-text'].forEach(v => document.documentElement.style.removeProperty(v));
+    }
+
+    function openThemeBuilderModal() {
+      const saved = JSON.parse(localStorage.getItem('customTheme') || 'null') || {};
+      THEME_VARS.forEach(v => {
+        const input = document.getElementById(themeFieldId(v));
+        if (input) input.value = saved[v] || DEFAULT_THEME_VARS[v];
+      });
+      document.getElementById('themeBuilderModal').style.display = 'flex';
+    }
+
+    function closeThemeBuilderModal() {
+      document.getElementById('themeBuilderModal').style.display = 'none';
+      document.getElementById('themeSelector').value = localStorage.getItem('siteTheme') || 'dark';
+    }
+
+    function resetThemeBuilder() {
+      THEME_VARS.forEach(v => {
+        const input = document.getElementById(themeFieldId(v));
+        if (input) input.value = DEFAULT_THEME_VARS[v];
+      });
+    }
+
+    function saveCustomTheme() {
+      const themeObj = {};
+      THEME_VARS.forEach(v => {
+        const input = document.getElementById(themeFieldId(v));
+        if (input) themeObj[v] = input.value;
+      });
+
+      localStorage.setItem('customTheme', JSON.stringify(themeObj));
+      localStorage.setItem('siteTheme', 'custom');
+      document.documentElement.setAttribute('data-theme', 'custom');
+      applyCustomThemeVars(themeObj);
+
+      document.getElementById('themeSelector').value = 'custom';
+      document.getElementById('themeBuilderModal').style.display = 'none';
+    }
+
     const savedTheme = localStorage.getItem('siteTheme') || 'dark';
-    changeTheme(savedTheme);
+    if (savedTheme === 'custom') {
+      const savedCustomTheme = JSON.parse(localStorage.getItem('customTheme') || 'null');
+      document.documentElement.setAttribute('data-theme', 'custom');
+      if (savedCustomTheme) applyCustomThemeVars(savedCustomTheme);
+    } else {
+      changeTheme(savedTheme);
+    }
     document.getElementById('themeSelector').value = savedTheme;
 
     /* --- Graphing Canvas Engine --- */
