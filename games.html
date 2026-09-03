@@ -50,6 +50,39 @@
       --btn-hover: #5bc0be;
     }
 
+    [data-theme="sunset"] {
+      --bg-color: #2d1b2e;
+      --card-bg: #3d2438;
+      --input-bg: #1f1420;
+      --text-color: #ffe8d6;
+      --accent-color: #ff6b35;
+      --header-bg: rgba(45, 27, 46, 0.6);
+      --btn-bg: #4a2c45;
+      --btn-hover: #5c3a56;
+    }
+
+    [data-theme="forest"] {
+      --bg-color: #142d1f;
+      --card-bg: #1e3f2a;
+      --input-bg: #0d1f14;
+      --text-color: #d8f3dc;
+      --accent-color: #52b788;
+      --header-bg: rgba(20, 45, 31, 0.6);
+      --btn-bg: #2d6a4f;
+      --btn-hover: #40916c;
+    }
+
+    [data-theme="ocean"] {
+      --bg-color: #0a1f2e;
+      --card-bg: #12374d;
+      --input-bg: #071620;
+      --text-color: #d6f0ff;
+      --accent-color: #00b4d8;
+      --header-bg: rgba(10, 31, 46, 0.6);
+      --btn-bg: #1b5e7a;
+      --btn-hover: #2389a8;
+    }
+
     * {
       box-sizing: border-box;
       margin: 0;
@@ -415,6 +448,47 @@
       border-color: var(--accent-color);
     }
 
+    .settings-field input[type="color"] {
+      padding: 4px;
+      height: 42px;
+      cursor: pointer;
+    }
+
+    .preset-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .preset-row img {
+      width: 18px;
+      height: 18px;
+      flex-shrink: 0;
+      border-radius: 4px;
+    }
+
+    .preset-row .preset-name {
+      flex-grow: 1;
+      font-size: 14px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .preset-row .action-btn {
+      padding: 6px 12px;
+      font-size: 12px;
+    }
+
+    .preset-row .close-btn {
+      font-size: 18px;
+      width: 28px;
+      height: 28px;
+      padding: 0;
+    }
+
     .modal-controls {
       position: absolute;
       top: 10px;
@@ -506,6 +580,10 @@
         <option value="neon">Neon</option>
         <option value="light">Light</option>
         <option value="midnight">Midnight</option>
+        <option value="sunset">Sunset</option>
+        <option value="forest">Forest</option>
+        <option value="ocean">Ocean</option>
+        <option value="custom">Custom...</option>
       </select>
 
       <button class="settings-icon-btn" onclick="openRequestModal()" title="Request a Game">➕ Request</button>
@@ -929,7 +1007,64 @@
         <span style="font-size: 13px; opacity: 0.8;">Preview</span>
       </div>
 
-      <button class="action-btn" style="padding: 10px; justify-content: center; margin-top: 8px;" onclick="saveCustomCloak()">Apply Cloak</button>
+      <div class="settings-field">
+        <label for="customCloakPresetName">Preset Name (to save for later):</label>
+        <input type="text" id="customCloakPresetName" placeholder="e.g. Math Class">
+      </div>
+
+      <div style="display: flex; gap: 8px;">
+        <button class="action-btn" style="flex: 1; padding: 10px; justify-content: center;" onclick="applyCustomCloak()">Apply Only</button>
+        <button class="action-btn" style="flex: 1; padding: 10px; justify-content: center;" onclick="saveCloakPreset()">💾 Save as Preset</button>
+      </div>
+
+      <div>
+        <label style="font-size: 13px; font-weight: 600; opacity: 0.9; display: block; margin-bottom: 6px;">Saved Presets:</label>
+        <div id="cloakPresetsContainer"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Custom Theme Builder Modal -->
+  <div id="themeBuilderModal" class="modal">
+    <div class="settings-modal-content">
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <h3 style="font-size: 18px;">🎨 Custom Theme Builder</h3>
+        <button class="close-btn" onclick="closeThemeBuilderModal()">&times;</button>
+      </div>
+
+      <div class="settings-field">
+        <label for="themeVar_bg-color">Background:</label>
+        <input type="color" id="themeVar_bg-color">
+      </div>
+      <div class="settings-field">
+        <label for="themeVar_card-bg">Card / Panel:</label>
+        <input type="color" id="themeVar_card-bg">
+      </div>
+      <div class="settings-field">
+        <label for="themeVar_input-bg">Input / Media Background:</label>
+        <input type="color" id="themeVar_input-bg">
+      </div>
+      <div class="settings-field">
+        <label for="themeVar_header-bg">Header:</label>
+        <input type="color" id="themeVar_header-bg">
+      </div>
+      <div class="settings-field">
+        <label for="themeVar_text-color">Text:</label>
+        <input type="color" id="themeVar_text-color">
+      </div>
+      <div class="settings-field">
+        <label for="themeVar_accent-color">Accent:</label>
+        <input type="color" id="themeVar_accent-color">
+      </div>
+      <div class="settings-field">
+        <label for="themeVar_btn-bg">Button:</label>
+        <input type="color" id="themeVar_btn-bg">
+      </div>
+
+      <div style="display: flex; gap: 8px;">
+        <button class="action-btn" style="flex: 1; padding: 10px; justify-content: center;" onclick="resetThemeBuilder()">Reset</button>
+        <button class="action-btn" style="flex: 1; padding: 10px; justify-content: center;" onclick="saveCustomTheme()">Apply Theme</button>
+      </div>
     </div>
   </div>
 
@@ -1324,13 +1459,102 @@ async function submitRequest() {
     }
 
     /* --- Theme Selector Logic --- */
+    const THEME_VARS = ['--bg-color', '--card-bg', '--input-bg', '--header-bg', '--text-color', '--accent-color', '--btn-bg'];
+    const DEFAULT_THEME_VARS = {
+      '--bg-color': '#2b2b2b',
+      '--card-bg': '#1e1e1e',
+      '--input-bg': '#111111',
+      '--header-bg': '#000000',
+      '--text-color': '#ffffff',
+      '--accent-color': '#00ffcc',
+      '--btn-bg': '#333333'
+    };
+
+    function themeFieldId(varName) {
+      return 'themeVar_' + varName.replace('--', '');
+    }
+
+    function lightenColor(hex, percent) {
+      hex = (hex || '#333333').replace('#', '');
+      if (hex.length === 3) hex = hex.split('').map(c => c + c).join('');
+      let r = parseInt(hex.substr(0, 2), 16);
+      let g = parseInt(hex.substr(2, 2), 16);
+      let b = parseInt(hex.substr(4, 2), 16);
+      r = Math.min(255, Math.round(r + (255 - r) * percent));
+      g = Math.min(255, Math.round(g + (255 - g) * percent));
+      b = Math.min(255, Math.round(b + (255 - b) * percent));
+      return '#' + [r, g, b].map(x => x.toString(16).padStart(2, '0')).join('');
+    }
+
     function changeTheme(themeName) {
+      if (themeName === 'custom') {
+        openThemeBuilderModal();
+        return;
+      }
+      clearCustomThemeOverrides();
       document.documentElement.setAttribute('data-theme', themeName);
       localStorage.setItem('siteTheme', themeName);
     }
 
+    function applyCustomThemeVars(themeObj) {
+      THEME_VARS.forEach(v => {
+        if (themeObj[v]) document.documentElement.style.setProperty(v, themeObj[v]);
+      });
+      if (themeObj['--btn-bg']) {
+        document.documentElement.style.setProperty('--btn-hover', lightenColor(themeObj['--btn-bg'], 0.2));
+      }
+    }
+
+    function clearCustomThemeOverrides() {
+      THEME_VARS.forEach(v => document.documentElement.style.removeProperty(v));
+      document.documentElement.style.removeProperty('--btn-hover');
+    }
+
+    function openThemeBuilderModal() {
+      const saved = JSON.parse(localStorage.getItem('customTheme') || 'null') || {};
+      THEME_VARS.forEach(v => {
+        const input = document.getElementById(themeFieldId(v));
+        if (input) input.value = saved[v] || DEFAULT_THEME_VARS[v];
+      });
+      document.getElementById('themeBuilderModal').style.display = 'flex';
+    }
+
+    function closeThemeBuilderModal() {
+      document.getElementById('themeBuilderModal').style.display = 'none';
+      document.getElementById('themeSelector').value = localStorage.getItem('siteTheme') || 'default';
+    }
+
+    function resetThemeBuilder() {
+      THEME_VARS.forEach(v => {
+        const input = document.getElementById(themeFieldId(v));
+        if (input) input.value = DEFAULT_THEME_VARS[v];
+      });
+    }
+
+    function saveCustomTheme() {
+      const themeObj = {};
+      THEME_VARS.forEach(v => {
+        const input = document.getElementById(themeFieldId(v));
+        if (input) themeObj[v] = input.value;
+      });
+
+      localStorage.setItem('customTheme', JSON.stringify(themeObj));
+      localStorage.setItem('siteTheme', 'custom');
+      document.documentElement.setAttribute('data-theme', 'custom');
+      applyCustomThemeVars(themeObj);
+
+      document.getElementById('themeSelector').value = 'custom';
+      document.getElementById('themeBuilderModal').style.display = 'none';
+    }
+
     const savedTheme = localStorage.getItem('siteTheme') || 'default';
-    changeTheme(savedTheme);
+    if (savedTheme === 'custom') {
+      const savedCustomTheme = JSON.parse(localStorage.getItem('customTheme') || 'null');
+      document.documentElement.setAttribute('data-theme', 'custom');
+      if (savedCustomTheme) applyCustomThemeVars(savedCustomTheme);
+    } else {
+      changeTheme(savedTheme);
+    }
     document.getElementById('themeSelector').value = savedTheme;
 
     /* --- Tab Cloaker Logic --- */
@@ -1388,6 +1612,11 @@ async function submitRequest() {
         return;
       }
 
+      if (cloakKey.startsWith('preset:')) {
+        applyPreset(cloakKey.slice('preset:'.length));
+        return;
+      }
+
       const selected = cloaks[cloakKey] || cloaks.default;
       applyCloak(selected.title, selected.icon);
       localStorage.setItem('siteCloak', cloakKey);
@@ -1410,6 +1639,8 @@ async function submitRequest() {
           showCustomCloakPreview(saved.icon || '');
         }
       }
+      document.getElementById('customCloakPresetName').value = '';
+      renderCloakPresetsList();
       document.getElementById('customCloakModal').style.display = 'flex';
     }
 
@@ -1452,10 +1683,15 @@ async function submitRequest() {
       }
     }
 
-    function saveCustomCloak() {
+    function getCustomCloakFields() {
       const title = document.getElementById('customCloakTitle').value.trim();
       const urlIcon = document.getElementById('customCloakIconUrl').value.trim();
       const icon = pendingCustomIcon || urlIcon;
+      return { title, icon };
+    }
+
+    function applyCustomCloak() {
+      const { title, icon } = getCustomCloakFields();
 
       if (!title || !icon) {
         alert('Please give the tab a title and either upload an icon or paste an icon link.');
@@ -1473,7 +1709,135 @@ async function submitRequest() {
       document.getElementById('customCloakModal').style.display = 'none';
     }
 
-    const savedCloak = localStorage.getItem('siteCloak') || 'default';
+    /* --- Saveable Cloak Presets --- */
+    function getCloakPresets() {
+      return JSON.parse(localStorage.getItem('cloakPresets') || '[]');
+    }
+
+    function renderCloakPresetOptions() {
+      const selector = document.getElementById('cloakSelector');
+      const oldGroup = document.getElementById('presetOptGroup');
+      if (oldGroup) oldGroup.remove();
+
+      const presets = getCloakPresets();
+      if (presets.length === 0) return;
+
+      const group = document.createElement('optgroup');
+      group.id = 'presetOptGroup';
+      group.label = 'My Presets';
+      presets.forEach(p => {
+        const opt = document.createElement('option');
+        opt.value = 'preset:' + p.name;
+        opt.textContent = p.name;
+        group.appendChild(opt);
+      });
+      selector.appendChild(group);
+    }
+
+    function renderCloakPresetsList() {
+      const container = document.getElementById('cloakPresetsContainer');
+      const presets = getCloakPresets();
+
+      if (presets.length === 0) {
+        container.innerHTML = '<div style="font-size:13px; opacity:0.7;">No saved presets yet.</div>';
+        return;
+      }
+
+      container.innerHTML = '';
+      presets.forEach(p => {
+        const row = document.createElement('div');
+        row.className = 'preset-row';
+
+        const img = document.createElement('img');
+        img.src = p.icon;
+        img.alt = '';
+        row.appendChild(img);
+
+        const name = document.createElement('span');
+        name.className = 'preset-name';
+        name.textContent = p.name;
+        row.appendChild(name);
+
+        const applyBtn = document.createElement('button');
+        applyBtn.className = 'action-btn';
+        applyBtn.textContent = 'Apply';
+        applyBtn.onclick = () => applyPreset(p.name);
+        row.appendChild(applyBtn);
+
+        const delBtn = document.createElement('button');
+        delBtn.className = 'close-btn';
+        delBtn.title = 'Delete preset';
+        delBtn.innerHTML = '&times;';
+        delBtn.onclick = () => deletePreset(p.name);
+        row.appendChild(delBtn);
+
+        container.appendChild(row);
+      });
+    }
+
+    function saveCloakPreset() {
+      const { title, icon } = getCustomCloakFields();
+      const name = document.getElementById('customCloakPresetName').value.trim();
+
+      if (!title || !icon) {
+        alert('Please give the tab a title and either upload an icon or paste an icon link.');
+        return;
+      }
+      if (!name) {
+        alert('Please give this preset a name so you can find it later.');
+        return;
+      }
+
+      const presets = getCloakPresets();
+      const existingIndex = presets.findIndex(p => p.name === name);
+      const preset = { name, title, icon };
+      if (existingIndex >= 0) {
+        presets[existingIndex] = preset;
+      } else {
+        presets.push(preset);
+      }
+      localStorage.setItem('cloakPresets', JSON.stringify(presets));
+
+      applyCloak(title, icon);
+      localStorage.setItem('siteCloak', 'preset:' + name);
+
+      renderCloakPresetOptions();
+      renderCloakPresetsList();
+
+      document.getElementById('cloakSelector').value = 'preset:' + name;
+      document.getElementById('customCloakModal').style.display = 'none';
+    }
+
+    function applyPreset(name) {
+      const presets = getCloakPresets();
+      const preset = presets.find(p => p.name === name);
+      if (!preset) return;
+
+      applyCloak(preset.title, preset.icon);
+      localStorage.setItem('siteCloak', 'preset:' + name);
+      document.getElementById('cloakSelector').value = 'preset:' + name;
+      document.getElementById('customCloakModal').style.display = 'none';
+    }
+
+    function deletePreset(name) {
+      let presets = getCloakPresets();
+      presets = presets.filter(p => p.name !== name);
+      localStorage.setItem('cloakPresets', JSON.stringify(presets));
+
+      const activeSiteCloak = localStorage.getItem('siteCloak') || 'default';
+      if (activeSiteCloak === 'preset:' + name) {
+        localStorage.setItem('siteCloak', 'default');
+        applyCloak(cloaks.default.title, cloaks.default.icon);
+        document.getElementById('cloakSelector').value = 'default';
+      }
+
+      renderCloakPresetOptions();
+      renderCloakPresetsList();
+    }
+
+    renderCloakPresetOptions();
+
+    let savedCloak = localStorage.getItem('siteCloak') || 'default';
     if (savedCloak === 'custom') {
       const savedCustom = JSON.parse(localStorage.getItem('customCloak') || 'null');
       if (savedCustom) {
@@ -1481,6 +1845,17 @@ async function submitRequest() {
         applyCloak(savedCustom.title, savedCustom.icon);
       } else {
         applyCloak(cloaks.default.title, cloaks.default.icon);
+        savedCloak = 'default';
+      }
+    } else if (savedCloak.startsWith('preset:')) {
+      const name = savedCloak.slice('preset:'.length);
+      const preset = getCloakPresets().find(p => p.name === name);
+      if (preset) {
+        applyCloak(preset.title, preset.icon);
+      } else {
+        applyCloak(cloaks.default.title, cloaks.default.icon);
+        localStorage.setItem('siteCloak', 'default');
+        savedCloak = 'default';
       }
     } else {
       changeCloak(savedCloak);
